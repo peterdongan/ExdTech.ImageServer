@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>aspnet-ExdTech.ImageServer-B572F146-3DBC-4CD2-9761-F5E471D5B710</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.5" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="1.1.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ExdTech.ImageBlobAccess\ExdTech.Images.BlobAccess.csproj" />
+    <ProjectReference Include="..\ExdTech.ImageFileValidation\ExdTech.ImageFileValidation.csproj" />
+    <ProjectReference Include="..\ExdTech.ImageProcessing\ExdTech.ImageProcessing.csproj" />
+  </ItemGroup>
+
+</Project>
