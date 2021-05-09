@@ -1,11 +1,11 @@
 # ExdTech.ImageServer
 
-Simple image server using a REST API. Developed for and used by ExdPic.
+Simple image server using a REST API. Developed for and used by ExdPic. 
 
 ## Set-up
 
 ### Storage
-By default it uses Azure Blob Storage. You can configure this by setting a "ImageStoreConnectionString" configuration value. Alternatively you can replace it by implementing the following interface:
+By default it uses Azure Blob Storage. You can configure this by setting "ImageStoreConnectionString" and "ContainerClient" configuration values. Alternatively you can replace it by implementing the following interface:
 
 **`IImageStore`**
 * `RetrievedImage GetImage (Guid id);`
