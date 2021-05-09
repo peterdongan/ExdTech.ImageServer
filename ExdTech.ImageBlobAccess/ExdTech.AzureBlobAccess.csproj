@@ -8,4 +8,8 @@
     <PackageReference Include="Azure.Storage.Blobs" Version="12.8.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ExdTech.ImageServer.Contract\ExdTech.ImageServer.Contract.csproj" />
+  </ItemGroup>
+
 </Project>

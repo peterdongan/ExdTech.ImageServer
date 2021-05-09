@@ -16,13 +16,11 @@ namespace ExdTech.ImageServer.Controllers
     [ApiController]
     public class ApiController : ControllerBase
     {
-        private readonly BlobAccess _blobAccess;
+        private readonly IImageStore _imageStore;
 
-        public ApiController(IConfiguration configuration)
+        public ApiController(IImageStore imageStore)
         {
-            Debug.WriteLine("Images api controller constructed.");
-            var blobConnectionString = configuration["BlobConnectionString"];
-            _blobAccess = new BlobAccess(blobConnectionString);
+            _imageStore = imageStore;
         }
 
         [HttpPost, Authorize(Policy = "access")]
@@ -53,11 +51,8 @@ namespace ExdTech.ImageServer.Controllers
         [Route("/{id}")]
         public async Task<FileResult> GetImage(Guid id)
         {
-            var image = await _blobAccess.GetBlob(id);
-            var contentType = image.ContentType;
-            var slashIndex = contentType.IndexOf('/');
-            var fileExtension = contentType.Substring(slashIndex + 1);
-            return File(image.Content, contentType, string.Format("{0}.{1}", id, fileExtension));
+            var image = await _imageStore.GetImage(id);
+            return File(image.FileContent, image.DocType, image.FileName);
         }
 
         /// <summary>
@@ -104,7 +99,7 @@ namespace ExdTech.ImageServer.Controllers
                 contentType = ImageFileValidator.GetContentTypeFromValidationResult(validationResult);
             }
 
-            var id = await _blobAccess.AddBlob(image, contentType);
+            var id = await _imageStore.AddImage(image, contentType);
 
             return id;
         }

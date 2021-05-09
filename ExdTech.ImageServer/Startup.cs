@@ -7,6 +7,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.OpenApi.Models;
+using ExdTech.ImageServer.Contract;
+using ExdTech.ImageBs.BlobAccess;
 
 namespace ExdTech.ImageServer
 {
@@ -35,6 +37,8 @@ namespace ExdTech.ImageServer
                         options.TokenValidationParameters.NameClaimType = "name";
                     },
             options => { Configuration.Bind("AzureAdB2C", options); });
+
+            services.AddScoped<IImageStore>(c => new BlobAccess(Configuration["ImageStoreConnectionString"], Configuration["ContainerClient"] ));
 
             services.AddAuthorization(options =>
             {
