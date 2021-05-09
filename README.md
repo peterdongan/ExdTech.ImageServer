@@ -16,7 +16,7 @@ The storage repository is injected. It uses the following interface:
 * `public Guid Id { get; set; }`
 * `public string DocType { get; set; }`
         
-An implementation using Azure Blob storage is included. You need to configure its connection string to use it.
+By default it uses the Azure Blob Storage implementation that is included. For it to work, set "ImageStoreConnectionString" in your appsettings file to your own Blob store.
 
 ### Authentication/Authorization
 The POST methods use policy-based authorization, using a policy called "access". You will need to configure, change or remove this as required. Image download is unprotected.
