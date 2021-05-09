@@ -1,19 +1,18 @@
 ﻿using ExdTech.ImageBs.BlobAccess;
 using ExdTech.ImageFileValidation;
 using ExdTech.ImageProcessing.Standard;
+using ExdTech.ImageServer.Contract;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ExdTech.ImageServer.Controllers
 {
-    [Route("[controller]/[action]")]
+    [Route("[action]")]
     [ApiController]
     public class ApiController : ControllerBase
     {
@@ -27,23 +26,57 @@ namespace ExdTech.ImageServer.Controllers
         }
 
         [HttpPost, Authorize(Policy = "access")]
-        public async Task<Guid> PageImages(Byte[] image)
+        public async Task<Guid> PageImages(SerializedImage image)
         {
             Debug.WriteLine("POST to api/images");
             Debug.WriteLine("Authenticated as " + User.Identity.Name);
 
-            return await ProcessPosts(image, 1080, 1080, 200000);
+            return await ProcessPosts(image.Data, 1080, 1080, 200000);
+        }
+
+
+        [HttpGet]
+        [Route("/[action]/{id}")]
+        public async Task<FileResult> ContentImages(Guid id)
+        {
+            return await GetImage(id);
+        }
+
+        [HttpGet]
+        [Route("/[action]/{id}")]
+        public async Task<FileResult> PageImages(Guid id)
+        {
+            return await GetImage(id);
+        }
+
+        [HttpGet]
+        [Route("/{id}")]
+        public async Task<FileResult> GetImage(Guid id)
+        {
+            var image = await _blobAccess.GetBlob(id);
+            var contentType = image.ContentType;
+            var slashIndex = contentType.IndexOf('/');
+            var fileExtension = contentType.Substring(slashIndex + 1);
+            return File(image.Content, contentType, string.Format("{0}.{1}", id, fileExtension));
+        }
+
+        /// <summary>
+        /// This is the same as posting to /contentimages
+        /// </summary>
+        /// <param name="image"></param>
+        /// <returns></returns>
+        [HttpPost, Authorize(Policy = "access")]
+        [Route("/{id}")]
+        public async Task<Guid> PostImage(SerializedImage image)
+        {
+            return await ProcessPosts(image.Data, 720, 720, 50000);
         }
 
 
         [HttpPost, Authorize(Policy = "access")]
-        public async Task<Guid> ContentImages(Byte[] image)
+        public async Task<Guid> ContentImages(SerializedImage image)
         {
-            Debug.WriteLine("POST to api/images");
-            Debug.WriteLine("Authenticated as " + User.Identity.Name);
-            // var dto = JsonConvert.DeserializeObject<FullPageDto>(dtostring, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }); 
-
-            return await ProcessPosts(image, 720, 720, 50000);
+            return await ProcessPosts(image.Data, 720, 720, 50000);
         }
 
         private async Task<Guid> ProcessPosts(byte[] image, double maxWidth, double maxHeight, int maxFileSize)
@@ -54,7 +87,7 @@ namespace ExdTech.ImageServer.Controllers
             {
                 throw new BadHttpRequestException("File validation failed. Verify that it is a valid jpg, png, gif or bmp");
             }
-            if (validationResult ==  ImageFileValidationResult.TOOBIG)
+            if (validationResult == ImageFileValidationResult.TOOBIG)
             {
                 throw new BadHttpRequestException("File too large. Max accepted filesize is 5MB.");
             }
@@ -78,4 +111,4 @@ namespace ExdTech.ImageServer.Controllers
 
     }
 
-    }
+}

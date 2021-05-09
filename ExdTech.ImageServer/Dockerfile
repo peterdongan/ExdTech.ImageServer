@@ -7,7 +7,7 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["ExdTech.ImageServer/ExdTech.ImageServer.csproj", "ExdTech.ImageServer/"]
+COPY ["ExdTech.ImageServer/ExdTech.ImageService.csproj", "ExdTech.ImageService/"]
 RUN dotnet restore "ExdTech.ImageServer/ExdTech.ImageServer.csproj"
 COPY . .
 WORKDIR "/src/ExdTech.ImageServer"

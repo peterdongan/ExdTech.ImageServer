@@ -18,6 +18,7 @@
     <ProjectReference Include="..\ExdTech.ImageBlobAccess\ExdTech.Images.BlobAccess.csproj" />
     <ProjectReference Include="..\ExdTech.ImageFileValidation\ExdTech.ImageFileValidation.csproj" />
     <ProjectReference Include="..\ExdTech.ImageProcessing\ExdTech.ImageProcessing.csproj" />
+    <ProjectReference Include="..\ExdTech.ImageServer.Contract\ExdTech.ImageServer.Contract.csproj" />
   </ItemGroup>
 
 </Project>
