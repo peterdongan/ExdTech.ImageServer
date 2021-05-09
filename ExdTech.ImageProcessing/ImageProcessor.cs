@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ExdTech.ImageServer.Contract;
+using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -7,22 +8,42 @@ using System.IO;
 
 namespace ExdTech.ImageProcessing.Standard
 {
-    public static class ImageProcessor
+    public class ImageProcessor : IImageProcessor
     {
+        private readonly int _maxFileSizeAcceptedInBytes;
+        private readonly int _maxFileSizeNotCompressedInBytes;
+        private readonly double _maxHeightInPixels;
+        private readonly double _maxWidthInPixels;
+        private readonly int _compressionQualityPercentage;
+
+        public ImageProcessor (int maxFileSizeAcceptedInBytes,
+                             int maxFileSizeNotCompressedInBytes,
+                             double maxHeightInPixels,
+                             double maxWidthInPixels,
+                             int compressionQualityPercentage)
+        {
+            _maxFileSizeAcceptedInBytes = maxFileSizeAcceptedInBytes;
+            _maxFileSizeNotCompressedInBytes = maxFileSizeNotCompressedInBytes;
+            _maxHeightInPixels = maxHeightInPixels;
+            _maxWidthInPixels = maxWidthInPixels;
+            _compressionQualityPercentage = compressionQualityPercentage;
+        }
+
         /// <summary>
-        /// Check the image dimensions and filesize are within stated limits. If not then apply scaling and compress it to be an 80% quality jpg.
+        /// Check the image dimensions and filesize are within stated limits. If not then apply scaling and compress it to be an 80% quality jpg. Reencode to jpg regardless.
         /// </summary>
         /// <param name="serializedImage"></param>
         /// <param name="maxHeight"></param>
         /// <param name="maxWidth"></param>
         /// <param name="maxBytes"></param>
         /// <returns>True if processing applied. False if image was not changed.</returns>
-        public static bool ProcessImageForSaving(ref byte[] serializedImage, double maxHeight, double maxWidth, int maxBytes)
+        public bool ProcessImageForSaving (ref byte[] serializedImage, double maxHeight, double maxWidth, int maxBytes)
         {
             //This code won't work in UWP.
 
             var fileByteCount = serializedImage.Length;
             var stream = new MemoryStream(serializedImage);
+            bool isChanged = false;
 
             Image img = Image.FromStream(stream);
             var width = img.Width;
@@ -39,6 +60,7 @@ namespace ExdTech.ImageProcessing.Standard
                 requiredHeight = height * scaleFactor;
                 requiredWidth = width * scaleFactor;
                 tooBig = true;
+                isChanged = true;
             }
             else
             {
@@ -51,6 +73,7 @@ namespace ExdTech.ImageProcessing.Standard
             if (tooBig || fileByteCount > maxBytes)
             {
                 newQuality = 80;
+                isChanged = true;
             }
             else
             {
@@ -63,7 +86,7 @@ namespace ExdTech.ImageProcessing.Standard
             {
                 image.Save(ms, image.RawFormat);
                 serializedImage = ms.ToArray();
-                return true;
+                return isChanged;
             }
         }
 

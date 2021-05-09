@@ -1,50 +1,31 @@
-﻿using ExdTech.ImageBs.BlobAccess;
+﻿// Copyright (c) Peter Dongan. All rights reserved.
+// Licensed under the MIT licence. https://opensource.org/licenses/MIT
+// Project: https://github.com/peterdongan/ExdTech.ImageServer
+
 using ExdTech.ImageFileValidation;
 using ExdTech.ImageProcessing.Standard;
 using ExdTech.ImageServer.Contract;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace ExdTech.ImageServer.Controllers
 {
-    [Route("[action]")]
     [ApiController]
     public class ApiController : ControllerBase
     {
         private readonly IImageStore _imageStore;
+        private readonly IImageProcessor _imageProcessor;
 
-        public ApiController(IImageStore imageStore)
+
+        public ApiController(IImageStore imageStore,
+                             IImageProcessor imageProcessor)
         {
             _imageStore = imageStore;
-        }
-
-        [HttpPost, Authorize(Policy = "access")]
-        public async Task<Guid> PageImages(SerializedImage image)
-        {
-            Debug.WriteLine("POST to api/images");
-            Debug.WriteLine("Authenticated as " + User.Identity.Name);
-
-            return await ProcessPosts(image.Data, 1080, 1080, 200000);
-        }
-
-
-        [HttpGet]
-        [Route("/[action]/{id}")]
-        public async Task<FileResult> ContentImages(Guid id)
-        {
-            return await GetImage(id);
-        }
-
-        [HttpGet]
-        [Route("/[action]/{id}")]
-        public async Task<FileResult> PageImages(Guid id)
-        {
-            return await GetImage(id);
+            _imageProcessor = imageProcessor;
         }
 
         [HttpGet]
@@ -60,21 +41,9 @@ namespace ExdTech.ImageServer.Controllers
         /// </summary>
         /// <param name="image"></param>
         /// <returns></returns>
-        [HttpPost, Authorize(Policy = "access")]
+        [HttpPost]
         [Route("/{id}")]
         public async Task<Guid> PostImage(SerializedImage image)
-        {
-            return await ProcessPosts(image.Data, 720, 720, 50000);
-        }
-
-
-        [HttpPost, Authorize(Policy = "access")]
-        public async Task<Guid> ContentImages(SerializedImage image)
-        {
-            return await ProcessPosts(image.Data, 720, 720, 50000);
-        }
-
-        private async Task<Guid> ProcessPosts(byte[] image, double maxWidth, double maxHeight, int maxFileSize)
         {
             ImageFileValidationResult validationResult = ImageFileValidator.CheckImage(image);
 
@@ -89,8 +58,8 @@ namespace ExdTech.ImageServer.Controllers
 
             string contentType;
 
-            //Shrink/compress the image if necessary. If it is shrunk/compressed then it is converted to a jpg.
-            if (ImageProcessor.ProcessImageForSaving(ref image, maxWidth, maxHeight, maxFileSize))
+            //Reencode as a jpg. Shrink if larger than width/height limits. Compress if size in bytes greater than filesize limit
+            if (ImageProcessor.ProcessImageForSaving(ref image, maxPixelWidth, maxPixelHeight, maxFileSizeBytes))
             {
                 contentType = "image/jpeg";
             }
@@ -103,6 +72,7 @@ namespace ExdTech.ImageServer.Controllers
 
             return id;
         }
+
 
     }
 
