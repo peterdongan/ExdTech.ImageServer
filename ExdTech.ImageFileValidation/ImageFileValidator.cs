@@ -1,11 +1,21 @@
-﻿using System;
+﻿using ExdTech.ImageServer.Contract;
+using System;
 using System.Linq;
 using System.Text;
 
 namespace ExdTech.ImageFileValidation
 {
-    public static class ImageFileValidator
+    /// <summary>
+    /// This only inspects the headers to detect file type, which can be spoofed. It is important that images are reencoded as a security perspective.
+    /// </summary>
+    public class ImageFileValidator : IUploadValidator
     {
+        private readonly int _maxFileSizeAcceptedInBytes;
+
+        public ImageFileValidator (int maxFileSizeAcceptedInBytes)
+        {
+            _maxFileSizeAcceptedInBytes = maxFileSizeAcceptedInBytes;
+        }
         public static string GetContentTypeFromValidationResult(ImageFileValidationResult result)
         {
             string[] contentTypes =
@@ -21,9 +31,12 @@ namespace ExdTech.ImageFileValidation
             return contentTypes[(int)result];
         }
 
-        public static ImageFileValidationResult CheckImage(byte[] imageByteArray)
+        /// <summary>
+        /// This only inspects the headers to detect file type, which can be spoofed. It is important that images are reencoded as a security perspective.
+        /// </summary>
+        public ImageFileValidationResult CheckImage(byte[] imageByteArray)
         {
-            if(imageByteArray.Length > 5000000)
+            if(imageByteArray.Length > _maxFileSizeAcceptedInBytes)
             {
                 return ImageFileValidationResult.TOOBIG;
             }

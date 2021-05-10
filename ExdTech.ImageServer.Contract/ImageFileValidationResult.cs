@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ExdTech.ImageFileValidation
+namespace ExdTech.ImageServer.Contract
 {
     public enum ImageFileValidationResult
     {

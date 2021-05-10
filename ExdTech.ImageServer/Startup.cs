@@ -9,6 +9,8 @@ using Microsoft.IdentityModel.Logging;
 using Microsoft.OpenApi.Models;
 using ExdTech.ImageServer.Contract;
 using ExdTech.ImageBs.BlobAccess;
+using ExdTech.ImageProcessing.Standard;
+using ExdTech.ImageFileValidation;
 
 namespace ExdTech.ImageServer
 {
@@ -38,13 +40,19 @@ namespace ExdTech.ImageServer
                     },
             options => { Configuration.Bind("AzureAdB2C", options); });
 
-            services.AddScoped<IImageStore>(c => new BlobAccess(Configuration["ImageStoreConnectionString"], Configuration["ContainerClient"] ));
-
-            services.AddAuthorization(options =>
+                        services.AddAuthorization(options =>
             {
                 options.AddPolicy("access",
                     policy => policy.Requirements.Add(new ScopesRequirement("access")));
             });
+
+
+
+            services.AddScoped<IImageStore> (c => new BlobAccess (Configuration["ImageStoreConnectionString"], Configuration["ContainerClient"] ));
+            services.AddScoped<IImageProcessor> (c => new ImageProcessor (Configuration.GetValue<int> ("MaxFileSizeNotCompressedInBytes"), Configuration.GetValue<double> ("MaxWidthUncompressedInPixels"), Configuration.GetValue<double> ("MaxHeightUncompressedInPixels"), Configuration.GetValue<int> ("CompressionQualityPercentage")));
+            services.AddScoped<IUploadValidator> (c => new ImageFileValidator (Configuration.GetValue<int>("MaxFileAcceptedInBytes")));
+
+
             services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "ExdTech.ImageServer", Version = "v1" });

@@ -19,13 +19,16 @@ namespace ExdTech.ImageServer.Controllers
     {
         private readonly IImageStore _imageStore;
         private readonly IImageProcessor _imageProcessor;
+        private readonly IUploadValidator _imageFileValidator;
 
 
         public ApiController(IImageStore imageStore,
-                             IImageProcessor imageProcessor)
+                             IImageProcessor imageProcessor,
+                             IUploadValidator uploadValidator)
         {
             _imageStore = imageStore;
             _imageProcessor = imageProcessor;
+            _imageFileValidator = uploadValidator;
         }
 
         [HttpGet]
@@ -36,16 +39,13 @@ namespace ExdTech.ImageServer.Controllers
             return File(image.FileContent, image.DocType, image.FileName);
         }
 
-        /// <summary>
-        /// This is the same as posting to /contentimages
-        /// </summary>
-        /// <param name="image"></param>
-        /// <returns></returns>
         [HttpPost]
-        [Route("/{id}")]
+        [Route("/{id}")]    // If using authorization: [HttpPost, Authorize(Policy = "access")]
         public async Task<Guid> PostImage(SerializedImage image)
         {
-            ImageFileValidationResult validationResult = ImageFileValidator.CheckImage(image);
+            var imageData = image.Data;
+
+            ImageFileValidationResult validationResult = _imageFileValidator.CheckImage(imageData);
 
             if (validationResult == ImageFileValidationResult.INVALID)
             {
@@ -58,17 +58,27 @@ namespace ExdTech.ImageServer.Controllers
 
             string contentType;
 
-            //Reencode as a jpg. Shrink if larger than width/height limits. Compress if size in bytes greater than filesize limit
-            if (ImageProcessor.ProcessImageForSaving(ref image, maxPixelWidth, maxPixelHeight, maxFileSizeBytes))
+            try
             {
-                contentType = "image/jpeg";
+                if (_imageProcessor.ProcessImageForSaving(ref imageData))
+                {
+                    contentType = "image/jpeg";
+                }
+                else
+                {
+                    contentType = ImageFileValidator.GetContentTypeFromValidationResult(validationResult);
+                }
             }
-            else
+            catch (ArgumentException)
             {
-                contentType = ImageFileValidator.GetContentTypeFromValidationResult(validationResult);
+                throw new BadHttpRequestException("Not a valid image file.");
+            }
+            catch (OutOfMemoryException)
+            {
+                throw new BadHttpRequestException("Not a valid image file.");
             }
 
-            var id = await _imageStore.AddImage(image, contentType);
+            var id = await _imageStore.AddImage (imageData, contentType);
 
             return id;
         }

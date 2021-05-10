@@ -9,8 +9,8 @@ namespace ExdTech.ImageBs.BlobAccess
 {
     public class BlobAccess : IImageStore
     {
-        private string _connectionString;
-        private string _containerClient;
+        private readonly string _connectionString;
+        private readonly string _containerClient;
 
         public BlobAccess(string connectionString, string containerClient)
         {
@@ -25,8 +25,6 @@ namespace ExdTech.ImageBs.BlobAccess
             BlobClient blobClient = containerClient.GetBlobClient(id.ToString());
             var download = await blobClient.DownloadAsync();
             var contentType = download.Value.ContentType;
-            var slashIndex = contentType.IndexOf('/');
-            var fileExtension = contentType.Substring(slashIndex + 1);
             return new RetrievedImage { DocType = contentType, FileContent = download.Value.Content, Id = id };
         }
 

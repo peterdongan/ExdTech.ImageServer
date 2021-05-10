@@ -10,19 +10,16 @@ namespace ExdTech.ImageProcessing.Standard
 {
     public class ImageProcessor : IImageProcessor
     {
-        private readonly int _maxFileSizeAcceptedInBytes;
         private readonly int _maxFileSizeNotCompressedInBytes;
         private readonly double _maxHeightInPixels;
         private readonly double _maxWidthInPixels;
         private readonly int _compressionQualityPercentage;
 
-        public ImageProcessor (int maxFileSizeAcceptedInBytes,
-                             int maxFileSizeNotCompressedInBytes,
-                             double maxHeightInPixels,
+        public ImageProcessor (int maxFileSizeNotCompressedInBytes,
                              double maxWidthInPixels,
+                             double maxHeightInPixels,
                              int compressionQualityPercentage)
         {
-            _maxFileSizeAcceptedInBytes = maxFileSizeAcceptedInBytes;
             _maxFileSizeNotCompressedInBytes = maxFileSizeNotCompressedInBytes;
             _maxHeightInPixels = maxHeightInPixels;
             _maxWidthInPixels = maxWidthInPixels;
@@ -33,11 +30,8 @@ namespace ExdTech.ImageProcessing.Standard
         /// Check the image dimensions and filesize are within stated limits. If not then apply scaling and compress it to be an 80% quality jpg. Reencode to jpg regardless.
         /// </summary>
         /// <param name="serializedImage"></param>
-        /// <param name="maxHeight"></param>
-        /// <param name="maxWidth"></param>
-        /// <param name="maxBytes"></param>
         /// <returns>True if processing applied. False if image was not changed.</returns>
-        public bool ProcessImageForSaving (ref byte[] serializedImage, double maxHeight, double maxWidth, int maxBytes)
+        public bool ProcessImageForSaving (ref byte[] serializedImage)
         {
             //This code won't work in UWP.
 
@@ -52,10 +46,10 @@ namespace ExdTech.ImageProcessing.Standard
             double requiredWidth;
             bool tooBig = false;
 
-            if (width > maxWidth || height > maxHeight)
+            if (width > _maxWidthInPixels || height > _maxHeightInPixels)
             {
-                var verticalScaleFactor = maxHeight / (double)height;
-                var horizontalScaleFactor = maxWidth / (double)width;
+                var verticalScaleFactor = _maxHeightInPixels / (double)height;
+                var horizontalScaleFactor = _maxWidthInPixels / (double)width;
                 var scaleFactor = Math.Min(verticalScaleFactor, horizontalScaleFactor);
                 requiredHeight = height * scaleFactor;
                 requiredWidth = width * scaleFactor;
@@ -70,9 +64,9 @@ namespace ExdTech.ImageProcessing.Standard
 
             int newQuality;
 
-            if (tooBig || fileByteCount > maxBytes)
+            if (tooBig || fileByteCount > _maxFileSizeNotCompressedInBytes)
             {
-                newQuality = 80;
+                newQuality = _compressionQualityPercentage;
                 isChanged = true;
             }
             else
