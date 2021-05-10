@@ -1,5 +1,12 @@
 # ExdTech.ImageServer
-Simple image server using a REST API. Developed for and used by ExdPic. 
+Minimalist but easily extensible image server using a REST API.
+
+## Features
+* Compresses images greater than configured filesize.
+* Resizes images with dimensions greater than configured limits.
+* Throws Bad request for invalid uploads.
+* Reencodes images as jpegs.
+* Stores images to Azure Blob Storage. (Easy to change.)
 
 ## Set-up
 Refer to appsettingsTemplate.json to set up your appsettings file.
