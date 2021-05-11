@@ -31,7 +31,7 @@ It's set up for Azure B2C policy-based authorization, using a policy called "acc
 Accepts png, bmp, gif, jpg and bmp serialized as byte arrays.
 
 ### Schema
-POSTS use `{"Data": byte[]}`. 
+POSTs use `{"Data": byte[]}`. 
 
 ### Endpoints
 
