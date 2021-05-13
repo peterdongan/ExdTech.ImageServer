@@ -50,10 +50,10 @@ Accepts png, bmp, gif, jpg and bmp serialized as byte arrays.
 POSTs use 
 ```
 {
-"Data": byte[],
-"WidthLimitPx": ushort?,
-"HeightLimitPx": ushort?,
-"ByteLimit": byte?
+"Data": byte[],             // Serialized image
+"WidthLimitPx": ushort?,    // Image is scaled down if this is exceeded. No effect if it is greater than the server's configured MaxWidthInPixels.
+"HeightLimitPx": ushort?,   // Image is scaled down if this is exceeded. No effect if it is greater than the server's configured MaxHeightInPixels.
+"ByteLimit": byte?          // Image is compressed if this is exceeded. No effect if it is greater than the server's configured MaxFileSizeNotCompressedInBytes.
 }
 ````
 
