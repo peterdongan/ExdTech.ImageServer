@@ -6,7 +6,7 @@ Minimalist image server using a REST API. Designed to be easy to extend and conf
 * Resizes images with dimensions greater than configured/specified limits.
 * Throws Bad Request if non-images are uploaded or if limits on accepted filesize or dimensions are exceeded.
 * Reencodes images as jpegs. 
-* Stores images to Azure Blob Storage. (Easy to change.)
+* Stores images to Azure Blob Storage. (Or elsewhere with your own implementation of `IImageStore`.)
 
 ## Set-up
 Configure the following values in appsettings.json:
