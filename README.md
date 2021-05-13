@@ -1,16 +1,32 @@
 # ExdTech.ImageServer
-Minimalist but easily extensible image server using a REST API.
+Minimalist image server using a REST API. Designed to be easy to extend and configure.
 
-## Features
+## Functions
 * Compresses images greater than configured filesize.
 * Resizes images with dimensions greater than configured limits.
-* Throws Bad request for invalid uploads.
-* Reencodes images as jpegs.
+* Throws Bad Request if non-images are uploaded or if limits on accepted filesize or dimensions are exceeded.
+* Reencodes images as jpegs. 
 * Stores images to Azure Blob Storage. (Easy to change.)
 
 ## Set-up
-Refer to appsettingsTemplate.json to set up your appsettings file.
+Configure the following values in appsettings.json:
 
+    "ImageStoreConnectionString": "<YourAzureBlobStore>",
+
+    // Name of container in Azure Blob Storage - remove this if using different storage.
+    // The container must exist. (It is not created programmtically.)
+    "ContainerClient": "imagefiles",
+
+    // Optional values. Can be used to prevent resizing.
+    "MaxWidthAccepted": 1080,
+    "MaxHeightAccepted": 1080,
+
+    "MaxWidthInPixels": 1080,
+    "MaxHeightInPixels": 1080,
+    "MaxFileSizeNotCompressedInBytes": 200000,
+    "MaxFileSizeAcceptedInBytes": 5000000,
+    "CompressionQualityPercentage": 80,
+    
 ### Storage
 By default it uses Azure Blob Storage. You can configure this by setting "ImageStoreConnectionString" and "ContainerClient" configuration values. Alternatively you can replace it by implementing the following interface:
 
@@ -31,17 +47,27 @@ It's set up for Azure B2C policy-based authorization, using a policy called "acc
 Accepts png, bmp, gif, jpg and bmp serialized as byte arrays.
 
 ### Schema
-POSTs use `{"Data": byte[]}`. 
+POSTs use 
+```
+{
+"Data": byte[],
+"WidthLimitPx": ushort?,
+"HeightLimitPx": ushort?,
+"ByteLimit": byte?
+}
+````
 
 ### Endpoints
 
 **`/` `POST`** 
-* Image is resized if width/height is greater than `<MaxWidthInPixels>`/`<MaxHeightInPixels>`.
-* Image is compressed if resized or if filesize is greater than `<MaxFileSizeNotCompressedInBytes>`. Compression quality is `<CompressionQualityPercentage>`.
-* Throws bad request if invalid file is added or if its size is greater than `<MaxFileSizeAcceptedInBytes>`.
+* Image is scaled down if its dimensions exceed configured/specified limits.
+* Image is compressed if its size exceeds configured/specified limits.
+* Throws Bad Request if a non-image is uploaded.
+* Throws Bad Request if any of `MaxFileSizeAcceptedInBytes`, `MaxHeightAccepted` or `MaxWidthAccepted` are configured and exceeded.
 * Returns a GUID.
 
 **`/<Id>` `GET`**
 * Returns the image for the specified Id. File is named `<Id>.jpeg`.
 
-
+## Licence
+MIT
