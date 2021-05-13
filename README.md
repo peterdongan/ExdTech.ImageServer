@@ -14,7 +14,7 @@ Configure the following values in appsettings.json:
     "ImageStoreConnectionString": "<YourAzureBlobStore>",
 
     // Name of container in Azure Blob Storage - remove this if using different storage.
-    // The container must exist. (It is not created programmtically.)
+    // The container must exist. (It is not created programmatically.)
     "ContainerClient": "imagefiles",
 
     // Optional values. Can be used to prevent resizing.
