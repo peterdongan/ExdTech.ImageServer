@@ -1,9 +1,32 @@
 # ExdTech.ImageServer
+Minimalist image server using a REST API. Designed to be easy to extend and configure.
 
-Simple image server using a REST API. Developed for and used by ExdPic. 
+## Functions
+* Compresses images greater than configured/specified filesize.
+* Resizes images with dimensions greater than configured/specified limits.
+* Throws Bad Request if non-images are uploaded or if limits on accepted filesize or dimensions are exceeded.
+* Reencodes images as jpegs. 
+* Stores images to Azure Blob Storage. (Or elsewhere with your own implementation of `IImageStore`.)
 
 ## Set-up
+Configure the following values in appsettings.json:
 
+    "ImageStoreConnectionString": "<YourAzureBlobStore>",
+
+    // Name of container in Azure Blob Storage - remove this if using different storage.
+    // The container must exist. (It is not created programmatically.)
+    "ContainerClient": "imagefiles",
+
+    // Optional values. Can be used to prevent resizing.
+    "MaxWidthAccepted": 1080,
+    "MaxHeightAccepted": 1080,
+
+    "MaxWidthInPixels": 1080,
+    "MaxHeightInPixels": 1080,
+    "MaxFileSizeNotCompressedInBytes": 200000,
+    "MaxFileSizeAcceptedInBytes": 5000000,
+    "CompressionQualityPercentage": 80,
+    
 ### Storage
 By default it uses Azure Blob Storage. You can configure this by setting "ImageStoreConnectionString" and "ContainerClient" configuration values. Alternatively you can replace it by implementing the following interface:
 
@@ -18,38 +41,33 @@ By default it uses Azure Blob Storage. You can configure this by setting "ImageS
 
 
 ### Authentication/Authorization
-The POST methods use policy-based authorization, using a policy called "access". You should remove or replace this as required. Image download is unprotected.
+It's set up for Azure B2C policy-based authorization, using a policy called "access". You can configure this for your own use, or remove it.
 
 ## API
-Images are uploaded by authenticated users via the API. Accepts png, bmp, gif, jpg and bmp files up to 5MB serialized as byte arrays. The server throws a bad request if larger files are submitted or if file type validation fails. All uploads are reencoded as jpegs. Images are resized if they exceed the maximum dimensions. Images are compressed if they are resized or the filesize if greater than the specified limit. Filenames are discarded. Downloaded files are named `[Id].jpg`.
+Accepts png, bmp, gif, jpg and bmp serialized as byte arrays.
 
 ### Schema
-POSTS use `{"Data": byte[]}`. 
+POSTs use 
+```
+{
+"Data": byte[],             // Serialized image
+"WidthLimitPx": ushort?,    // Image is scaled down if this is exceeded. No effect if it is greater than the server's configured MaxWidthInPixels.
+"HeightLimitPx": ushort?,   // Image is scaled down if this is exceeded. No effect if it is greater than the server's configured MaxHeightInPixels.
+"ByteLimit": byte?          // Image is compressed if this is exceeded. No effect if it is greater than the server's configured MaxFileSizeNotCompressedInBytes.
+}
+````
 
 ### Endpoints
-**`/contentimages` `POST`** 
-* Image is resized if width/height >720px.
-* Image is compressed if resized or if filesize >50k
-* Returns a GUID.
 
-**`/pageimages` `POST`** 
-* Image is resized if width/height >1080px.
-* Image is compressed if resized or if filesize >200k
-* Returns a GUID.
-* 
 **`/` `POST`** 
-* _Uses same code as a POST to /contentimages._
-* Image is resized if width/height >720px.
-* Image is compressed if resized or if filesize >50k
+* Image is scaled down if its dimensions exceed configured/specified limits.
+* Image is compressed if its size exceeds configured/specified limits.
+* Throws Bad Request if a non-image is uploaded.
+* Throws Bad Request if any of `MaxFileSizeAcceptedInBytes`, `MaxHeightAccepted` or `MaxWidthAccepted` are configured and exceeded.
 * Returns a GUID.
 
+**`/<Id>` `GET`**
+* Returns the image for the specified Id. File is named `<Id>.jpeg`.
 
-Images are accessed by:
-
-**`/[Id]` `GET`**
-
-**`/pageimages/[Id]` `GET`** 
-
-**`/contentimages/[Id]` `GET`** 
-
-All of these point to the same resource. There is no difference between them.
+## Licence
+MIT
