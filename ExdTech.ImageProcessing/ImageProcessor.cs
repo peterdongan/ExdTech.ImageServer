@@ -14,42 +14,67 @@ namespace ExdTech.ImageProcessing.Standard
         private readonly double _maxHeightInPixels;
         private readonly double _maxWidthInPixels;
         private readonly int _compressionQualityPercentage;
+        private readonly ushort? _maxWidthAccepted;
+        private readonly ushort? _maxHeightAccepted;
+        private readonly uint _maxFileSizeAcceptedInBytes;
 
-        public ImageProcessor (int maxFileSizeNotCompressedInBytes,
-                             double maxWidthInPixels,
-                             double maxHeightInPixels,
-                             int compressionQualityPercentage)
+        public ImageProcessor (ImageProcessingOptions options)
         {
-            _maxFileSizeNotCompressedInBytes = maxFileSizeNotCompressedInBytes;
-            _maxHeightInPixels = maxHeightInPixels;
-            _maxWidthInPixels = maxWidthInPixels;
-            _compressionQualityPercentage = compressionQualityPercentage;
+            _maxFileSizeNotCompressedInBytes = options.MaxFileSizeNotCompressedInBytes;
+            _maxHeightInPixels = options.MaxHeightInPixels;
+            _maxWidthInPixels = options.MaxWidthInPixels;
+            _compressionQualityPercentage = options.CompressionQualityPercentage;
+            _maxWidthAccepted = options.MaxWidthAccepted;
+            _maxHeightAccepted = options.MaxHeightAccepted;
+            _maxFileSizeAcceptedInBytes = options.MaxFileSizeAcceptedInBytes;
         }
 
+        public ushort? MaxWidthExpected => _maxWidthAccepted;
+        public ushort? MaxHeightExpected => _maxHeightAccepted;
+
         /// <summary>
-        /// Check the image dimensions and filesize are within stated limits. If not then apply scaling and compress it to be an 80% quality jpg. Reencode to jpg regardless.
+        /// Check the image dimensions and filesize are within the lesser of the passed limits and the  If not then apply scaling and compress it to be an 80% quality jpg. Reencode to jpg regardless.
         /// </summary>
         /// <param name="serializedImage"></param>
         /// <returns>True if processing applied. False if image was not changed.</returns>
-        public bool ProcessImageForSaving (ref byte[] serializedImage)
+        public bool ProcessImageForSaving(ref byte[] serializedImage, ushort? wLimitPx, ushort? hLimitPx, uint? byteLimit)
         {
             //This code won't work in UWP.
 
             var fileByteCount = serializedImage.Length;
             var stream = new MemoryStream(serializedImage);
+            if(stream.Length > _maxFileSizeAcceptedInBytes)
+            {
+                throw new ArgumentOutOfRangeException("File size is greater than expected maximum.");
+            }
+
             bool isChanged = false;
 
-            Image img = Image.FromStream(stream);
+            Image img = Image.FromStream(stream);   // Throws ArgumentException or OutOfMemoryException if the stream doesn't have a valid image format.
             var width = img.Width;
             var height = img.Height;
+
+            // If _maxWidthAccepted is set then the client should not send images larger than that.
+            if (_maxWidthAccepted != null && width > _maxWidthAccepted)
+            {
+                throw new ArgumentOutOfRangeException ("Image dimensions outside expected range.");
+            }
+            if (_maxHeightAccepted != null && height > _maxHeightAccepted)
+            {
+                throw new ArgumentOutOfRangeException ("Image dimensions outside expected range.");
+            }
+
             double requiredHeight;
             double requiredWidth;
             bool tooBig = false;
 
+            double applicableWidthLimit = wLimitPx == null ? _maxWidthInPixels : Math.Min(wLimitPx.Value, _maxWidthInPixels);
+            double applicableHeightLimit = wLimitPx == null ? _maxHeightInPixels : Math.Min(hLimitPx.Value, _maxHeightInPixels);
+
             if (width > _maxWidthInPixels || height > _maxHeightInPixels)
             {
-                var verticalScaleFactor = _maxHeightInPixels / (double)height;
-                var horizontalScaleFactor = _maxWidthInPixels / (double)width;
+                var verticalScaleFactor = applicableHeightLimit / (double)height;
+                var horizontalScaleFactor = applicableWidthLimit / (double)width;
                 var scaleFactor = Math.Min(verticalScaleFactor, horizontalScaleFactor);
                 requiredHeight = height * scaleFactor;
                 requiredWidth = width * scaleFactor;
@@ -75,7 +100,7 @@ namespace ExdTech.ImageProcessing.Standard
             }
 
             //Reencode all uploaded images as a security measure.
-            var image = ReencodeImage(img, (int)requiredWidth, (int)requiredHeight, newQuality);
+            var image = ReencodeImage (img, (int)requiredWidth, (int)requiredHeight, newQuality);
             using (var ms = new MemoryStream())
             {
                 image.Save(ms, image.RawFormat);
@@ -84,17 +109,17 @@ namespace ExdTech.ImageProcessing.Standard
             }
         }
 
-        public static Image ReencodeImage(Image image, int newWidth, int newHeight,    //https://stackoverflow.com/questions/24643408/how-to-do-on-the-fly-image-compression-in-c
+        public static Image ReencodeImage (Image image, int newWidth, int newHeight,    //https://stackoverflow.com/questions/24643408/how-to-do-on-the-fly-image-compression-in-c
                             int newQuality)   // set quality to 1-100, eg 50
         {
             using (Image memImage = new Bitmap(image, newWidth, newHeight))
             {
                 ImageCodecInfo myImageCodecInfo;
-                System.Drawing.Imaging.Encoder myEncoder;
+                Encoder myEncoder;
                 EncoderParameter myEncoderParameter;
                 EncoderParameters myEncoderParameters;
                 myImageCodecInfo = GetEncoderInfo("image/jpeg");
-                myEncoder = System.Drawing.Imaging.Encoder.Quality;
+                myEncoder = Encoder.Quality;
                 myEncoderParameters = new EncoderParameters(1);
                 myEncoderParameter = new EncoderParameter(myEncoder, newQuality);
                 myEncoderParameters.Param[0] = myEncoderParameter;

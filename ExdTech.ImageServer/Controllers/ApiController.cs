@@ -19,16 +19,12 @@ namespace ExdTech.ImageServer.Controllers
     {
         private readonly IImageStore _imageStore;
         private readonly IImageProcessor _imageProcessor;
-        private readonly IUploadValidator _imageFileValidator;
-
 
         public ApiController(IImageStore imageStore,
-                             IImageProcessor imageProcessor,
-                             IUploadValidator uploadValidator)
+                             IImageProcessor imageProcessor)
         {
             _imageStore = imageStore;
             _imageProcessor = imageProcessor;
-            _imageFileValidator = uploadValidator;
         }
 
         [HttpGet]
@@ -45,38 +41,26 @@ namespace ExdTech.ImageServer.Controllers
         {
             var imageData = image.Data;
 
-            ImageFileValidationResult validationResult = _imageFileValidator.CheckImage(imageData);
-
-            if (validationResult == ImageFileValidationResult.INVALID)
-            {
-                throw new BadHttpRequestException("File validation failed. Verify that it is a valid jpg, png, gif or bmp");
-            }
-            if (validationResult == ImageFileValidationResult.TOOBIG)
-            {
-                throw new BadHttpRequestException("File too large. Max accepted filesize is 5MB.");
-            }
-
             string contentType;
 
             try
             {
-                if (_imageProcessor.ProcessImageForSaving(ref imageData))
-                {
-                    contentType = "image/jpeg";
-                }
-                else
-                {
-                    contentType = ImageFileValidator.GetContentTypeFromValidationResult(validationResult);
-                }
+                _imageProcessor.ProcessImageForSaving(ref imageData, image.WidthLimitPx, image.HeightLimitPx);
+                contentType = "image/jpeg";
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                throw new BadHttpRequestException (e.Message);   // Assumed this is thrown because Image dimensions outside expected range.
             }
             catch (ArgumentException)
             {
-                throw new BadHttpRequestException("Not a valid image file.");
+                throw new BadHttpRequestException ("Not a valid image file.");
             }
             catch (OutOfMemoryException)
             {
-                throw new BadHttpRequestException("Not a valid image file.");
+                throw new BadHttpRequestException ("Not a valid image file.");
             }
+
 
             var id = await _imageStore.AddImage (imageData, contentType);
 

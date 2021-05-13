@@ -6,11 +6,13 @@ namespace ExdTech.ImageServer.Contract
 {
     public enum ImageFileValidationResult
     {
-        INVALID,
+        Invalid,
         jpg,
         png,
         bmp,
         gif,
-        TOOBIG
+        FileSizeTooBig,
+        WidthTooBig,
+        HeightTooBig
     }
 }

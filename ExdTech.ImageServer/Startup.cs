@@ -10,7 +10,7 @@ using Microsoft.OpenApi.Models;
 using ExdTech.ImageServer.Contract;
 using ExdTech.ImageBs.BlobAccess;
 using ExdTech.ImageProcessing.Standard;
-using ExdTech.ImageFileValidation;
+using Microsoft.Extensions.Options;
 
 namespace ExdTech.ImageServer
 {
@@ -23,7 +23,6 @@ namespace ExdTech.ImageServer
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             IdentityModelEventSource.ShowPII = true;
@@ -43,14 +42,13 @@ namespace ExdTech.ImageServer
                         services.AddAuthorization(options =>
             {
                 options.AddPolicy("access",
-                    policy => policy.Requirements.Add(new ScopesRequirement("access")));
+                    policy => policy.Requirements.Add (new ScopesRequirement("access")));
             });
 
-
-
+            var imageProcessingOptions = new ImageProcessingOptions ();
+            Configuration.Bind (ImageProcessingOptions.ImageProcessingConfig, imageProcessingOptions);
             services.AddScoped<IImageStore> (c => new BlobAccess (Configuration["ImageStoreConnectionString"], Configuration["ContainerClient"] ));
-            services.AddScoped<IImageProcessor> (c => new ImageProcessor (Configuration.GetValue<int> ("MaxFileSizeNotCompressedInBytes"), Configuration.GetValue<double> ("MaxWidthUncompressedInPixels"), Configuration.GetValue<double> ("MaxHeightUncompressedInPixels"), Configuration.GetValue<int> ("CompressionQualityPercentage")));
-            services.AddScoped<IUploadValidator> (c => new ImageFileValidator (Configuration.GetValue<int>("MaxFileAcceptedInBytes")));
+            services.AddScoped<IImageProcessor> (c => new ImageProcessor (imageProcessingOptions));
 
 
             services.AddSwaggerGen(c =>

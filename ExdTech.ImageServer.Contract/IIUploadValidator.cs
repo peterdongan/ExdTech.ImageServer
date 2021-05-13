@@ -9,5 +9,7 @@ namespace ExdTech.ImageServer.Contract
     public interface IUploadValidator
     {
         public ImageFileValidationResult CheckImage (byte[] imageByteArray);
+
+        
     }
 }

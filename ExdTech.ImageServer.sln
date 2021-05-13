@@ -7,11 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExdTech.ImageServer", "ExdT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExdTech.ImageProcessing", "ExdTech.ImageProcessing\ExdTech.ImageProcessing.csproj", "{9ABED82F-1EB2-4FDE-B393-852643D664B1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExdTech.ImageFileValidation", "ExdTech.ImageFileValidation\ExdTech.ImageFileValidation.csproj", "{FC38CF26-2ED1-413D-AF36-1AE96AE183E0}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExdTech.AzureBlobAccess", "ExdTech.ImageBlobAccess\ExdTech.AzureBlobAccess.csproj", "{E2571473-CDD2-4990-9AC2-581A737C08AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExdTech.ImageServer.Contract", "ExdTech.ImageServer.Contract\ExdTech.ImageServer.Contract.csproj", "{D0FED7A6-92CC-4642-A112-FBC2CCF3382F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExdTech.ImageServer.Contract", "ExdTech.ImageServer.Contract\ExdTech.ImageServer.Contract.csproj", "{D0FED7A6-92CC-4642-A112-FBC2CCF3382F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,10 +25,6 @@ Global
 		{9ABED82F-1EB2-4FDE-B393-852643D664B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9ABED82F-1EB2-4FDE-B393-852643D664B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9ABED82F-1EB2-4FDE-B393-852643D664B1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FC38CF26-2ED1-413D-AF36-1AE96AE183E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FC38CF26-2ED1-413D-AF36-1AE96AE183E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FC38CF26-2ED1-413D-AF36-1AE96AE183E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FC38CF26-2ED1-413D-AF36-1AE96AE183E0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E2571473-CDD2-4990-9AC2-581A737C08AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E2571473-CDD2-4990-9AC2-581A737C08AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E2571473-CDD2-4990-9AC2-581A737C08AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
