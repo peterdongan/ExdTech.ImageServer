@@ -2,8 +2,8 @@
 Minimalist image server using a REST API. Designed to be easy to extend and configure.
 
 ## Functions
-* Compresses images greater than configured filesize.
-* Resizes images with dimensions greater than configured limits.
+* Compresses images greater than configured/specified filesize.
+* Resizes images with dimensions greater than configured/specified limits.
 * Throws Bad Request if non-images are uploaded or if limits on accepted filesize or dimensions are exceeded.
 * Reencodes images as jpegs. 
 * Stores images to Azure Blob Storage. (Easy to change.)
