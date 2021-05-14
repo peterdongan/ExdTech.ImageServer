@@ -17,7 +17,7 @@ Configure the following values in appsettings.json:
     // The container must exist. (It is not created programmatically.)
     "ContainerClient": "imagefiles",
 
-    // Optional values. Can be used to prevent resizing.
+    // Optional values. Can be used to only accept images that will not be resized. 
     "MaxWidthAccepted": 1080,
     "MaxHeightAccepted": 1080,
 
