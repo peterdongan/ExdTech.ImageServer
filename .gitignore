@@ -364,3 +364,4 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/ExdTech.ImageServer/Properties/ServiceDependencies/ImageServer - Web Deploy/profile.arm.json

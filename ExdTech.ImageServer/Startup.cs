@@ -55,9 +55,20 @@ namespace ExdTech.ImageServer
 
 
             services.AddSwaggerGen(c =>
-        {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "ExdTech.ImageServer", Version = "v1" });
-        });
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "ExdTech.ImageServer",
+                    Description = "Image server for Exd Pic.",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "ExdPic.com",
+                        Email = string.Empty,
+                        Url = new Uri("http://exdpic.com"),
+                    }
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,9 +77,15 @@ namespace ExdTech.ImageServer
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ExdTech.ImageServer v1"));
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "ExdTech.ImageServer V1");
+                c.RoutePrefix = string.Empty;
+            });
+
 
             app.UseHttpsRedirection();
 
