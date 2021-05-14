@@ -31,7 +31,7 @@ By default it uses Azure Blob Storage. You can configure this by setting "ImageS
 
 
 ### Authentication/Authorization
-It's set up for Azure B2C policy-based authorization, using a policy called "access". You can configure this for your own use, or remove it.
+It's set up for Azure B2C policy-based authorization, using a policy called "access". You can configure this for your own set-up, or remove it.
 
 ## API
 
