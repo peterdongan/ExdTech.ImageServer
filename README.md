@@ -34,10 +34,9 @@ By default it uses Azure Blob Storage. You can configure this by setting "ImageS
 It's set up for Azure B2C policy-based authorization, using a policy called "access". You can configure this for your own use, or remove it.
 
 ## API
-Accepts png, bmp, gif, jpg and bmp serialized as byte arrays.
 
 ### Schema
-POSTs use 
+POSTs use:
 ```
 {
 "Data": byte[],             // Serialized image
