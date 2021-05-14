@@ -50,7 +50,7 @@ namespace ExdTech.ImageProcessing.Standard
 
             bool isChanged = false;
 
-            Image img = null;
+            Image img;
 
             try
             {

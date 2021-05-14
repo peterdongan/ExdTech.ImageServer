@@ -21,6 +21,6 @@ namespace ExdTech.ImageServer.Contract
         /// <summary>
         /// Compress image if exceeded. Ignored if greater than server max.
         /// </summary>
-        public byte? ByteLimit { get; set; }
+        public ushort? ByteLimit { get; set; }
     }
 }

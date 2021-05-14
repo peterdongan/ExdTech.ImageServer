@@ -41,11 +41,11 @@ namespace ExdTech.ImageServer.Controllers
                 var image = await _imageStore.GetImage(id);
                 return File(image.FileContent, image.DocType, image.FileName);
             }
-            catch (FileNotFoundException e)
+            catch (FileNotFoundException)
             {
                 return NotFound("No image with the specified Id was found.");
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
@@ -82,8 +82,7 @@ namespace ExdTech.ImageServer.Controllers
             }
 
             var id = await _imageStore.AddImage (imageData, contentType);
-            var response = new { Id = id };
-            return Ok(response);
+            return Ok(id);
             
         }
 

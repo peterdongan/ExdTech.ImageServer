@@ -47,7 +47,11 @@ namespace ExdTech.ImageServer
             });
 
             var imageProcessingOptions = new ImageProcessingOptions ();
-            Configuration.Bind (ImageProcessingOptions.ImageProcessingConfig, imageProcessingOptions);
+
+            // This was a more elegant way of doing it, but environment variables were not being applied when I did it this way:
+            // Configuration.Bind (ImageProcessingOptions.ImageProcessingConfig, imageProcessingOptions);
+
+            imageProcessingOptions.CompressionQualityPercentage = int.Parse(Configuration["ImageProcessingConfig:CompressionQualityPercentage"]);
 
             services.AddScoped<IImageStore>(c => new BlobAccess(Configuration["ImageStoreConnectionString"], Configuration["ContainerClient"]));
 
