@@ -10,7 +10,7 @@ Minimalist image server using a REST API. Designed to be easy to extend and conf
 
 ## Set-up
 Configure the following values in appsettings.json:
-
+````
   // Binds to ExdTech.ImageServer.Contract.ImageProcessingOptions.
   "ImageProcessingConfig": {
     "MaxWidthAccepted": 1080,   // Not required. Images are rejected if this is exceeded.
@@ -24,7 +24,7 @@ Configure the following values in appsettings.json:
 
   "ImageStoreConnectionString": "<Connection string>",
   "ContainerClient": "<Container>", // Container must already exist
-    
+````    
     
 ### Storage
 By default it uses Azure Blob Storage. You can configure this by setting "ImageStoreConnectionString" and "ContainerClient" configuration values. Alternatively you can replace it by implementing the `IImageStore` interface 
