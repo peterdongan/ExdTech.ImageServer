@@ -28,16 +28,16 @@ namespace ExdTech.ImageProcessing.Standard
             _maxHeightAccepted = options.MaxHeightAccepted;
             _maxFileSizeAcceptedInBytes = options.MaxFileSizeAcceptedInBytes;
         }
-
-        public ushort? MaxWidthExpected => _maxWidthAccepted;
-        public ushort? MaxHeightExpected => _maxHeightAccepted;
+       
+        public ushort? MaxAcceptedWidth => _maxWidthAccepted;
+        public ushort? MaxAcceptedHeight => _maxHeightAccepted;
 
         /// <summary>
         /// Check the image dimensions and filesize are within the lesser of the passed limits and the  If not then apply scaling and compress it to be an 80% quality jpg. Reencode to jpg regardless.
         /// </summary>
         /// <param name="serializedImage"></param>
         /// <returns>True if processing applied. False if image was not changed.</returns>
-        public bool ProcessImageForSaving(ref byte[] serializedImage, ushort? wLimitPx, ushort? hLimitPx, uint? byteLimit)
+        public bool ProcessImage (ref byte[] serializedImage, ushort? wLimitPx, ushort? hLimitPx, uint? byteLimit)
         {
             //This code won't work in UWP.
 
@@ -50,7 +50,22 @@ namespace ExdTech.ImageProcessing.Standard
 
             bool isChanged = false;
 
-            Image img = Image.FromStream(stream);   // Throws ArgumentException or OutOfMemoryException if the stream doesn't have a valid image format.
+            Image img = null;
+
+            try
+            {
+                img = Image.FromStream(stream);   // Throws ArgumentException or OutOfMemoryException if the stream doesn't have a valid image format.
+
+            }
+            catch (ArgumentException)
+            {
+                throw new InvalidDataException();
+            }
+            catch (OutOfMemoryException)
+            {
+                throw new InvalidDataException();
+            }
+
             var width = img.Width;
             var height = img.Height;
 

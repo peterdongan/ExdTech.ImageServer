@@ -11,6 +11,7 @@ using ExdTech.ImageServer.Contract;
 using ExdTech.ImageBs.BlobAccess;
 using ExdTech.ImageProcessing.Standard;
 using Microsoft.Extensions.Options;
+using System;
 
 namespace ExdTech.ImageServer
 {
@@ -47,7 +48,9 @@ namespace ExdTech.ImageServer
 
             var imageProcessingOptions = new ImageProcessingOptions ();
             Configuration.Bind (ImageProcessingOptions.ImageProcessingConfig, imageProcessingOptions);
-            services.AddScoped<IImageStore> (c => new BlobAccess (Configuration["ImageStoreConnectionString"], Configuration["ContainerClient"] ));
+
+            services.AddScoped<IImageStore>(c => new BlobAccess(Configuration["ImageStoreConnectionString"], Configuration["ContainerClient"]));
+
             services.AddScoped<IImageProcessor> (c => new ImageProcessor (imageProcessingOptions));
 
 

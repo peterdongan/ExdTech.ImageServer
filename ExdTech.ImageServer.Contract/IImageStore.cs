@@ -8,6 +8,11 @@ namespace ExdTech.ImageServer.Contract
 {
     public interface IImageStore
     {
+        /// <summary>
+        /// Throw a FIleNotFoundException if the file is not found
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         Task<RetrievedImage> GetImage (Guid id);
 
         Task<Guid> AddImage (byte[] data, string docType);
