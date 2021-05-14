@@ -11,33 +11,23 @@ Minimalist image server using a REST API. Designed to be easy to extend and conf
 ## Set-up
 Configure the following values in appsettings.json:
 
-    "ImageStoreConnectionString": "<YourAzureBlobStore>",
+  // Binds to ExdTech.ImageServer.Contract.ImageProcessingOptions.
+  "ImageProcessingConfig": {
+    "MaxWidthAccepted": 1080,   // Not required. Images are rejected if this is exceeded.
+    "MaxHeightAccepted": 1080,  // Not required. Images are rejected if this is exceeded.
+    "MaxWidthInPixels": 1080,   // Images are scaled down if this is exceeded. 
+    "MaxHeightInPixels": 1080,  // Images are scaled down if this is exceeded.
+    "MaxFileSizeNotCompressedInBytes": 200000,  // Images are compressed if this is exceeded.
+    "MaxFileSizeAcceptedInBytes": 5000000,      // Images are rejected if this is exceeded.
+    "CompressionQualityPercentage": 80          // Jpg compression quality to use if compressing.
+  },
 
-    // Name of container in Azure Blob Storage - remove this if using different storage.
-    // The container must exist. (It is not created programmatically.)
-    "ContainerClient": "imagefiles",
-
-    // Optional values. Can be used to only accept images that will not be resized. 
-    "MaxWidthAccepted": 1080,
-    "MaxHeightAccepted": 1080,
-
-    "MaxWidthInPixels": 1080,
-    "MaxHeightInPixels": 1080,
-    "MaxFileSizeNotCompressedInBytes": 200000,
-    "MaxFileSizeAcceptedInBytes": 5000000,
-    "CompressionQualityPercentage": 80,
+  "ImageStoreConnectionString": "<Connection string>",
+  "ContainerClient": "<Container>", // Container must already exist
+    
     
 ### Storage
-By default it uses Azure Blob Storage. You can configure this by setting "ImageStoreConnectionString" and "ContainerClient" configuration values. Alternatively you can replace it by implementing the following interface:
-
-**`IImageStore`**
-* `RetrievedImage GetImage (Guid id);`
-* `Guid AddImage (byte[] data, string docType);`
-        
-**`RetrievedImage`**
-* `public Stream FileContent { get; set; }`
-* `public Guid Id { get; set; }`
-* `public string DocType { get; set; }`
+By default it uses Azure Blob Storage. You can configure this by setting "ImageStoreConnectionString" and "ContainerClient" configuration values. Alternatively you can replace it by implementing the `IImageStore` interface 
 
 
 ### Authentication/Authorization
