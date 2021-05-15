@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ExdTech.ImageServer.Contract
 {
-    public interface IImageStore
+    public interface IImageStorageService
     {
         /// <summary>
         /// Throw a FIleNotFoundException if the file is not found

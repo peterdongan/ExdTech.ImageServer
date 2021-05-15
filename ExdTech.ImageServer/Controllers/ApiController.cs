@@ -16,15 +16,15 @@ namespace ExdTech.ImageServer.Controllers
     [ApiController]
     public class ApiController : ControllerBase
     {
-        private readonly IImageStore _imageStore;
-        private readonly IImageProcessor _imageProcessor;
+        private readonly IImageStorageService _imageStore;
+        private readonly IImageProcessingService _imageProcessingService;
 
 
-        public ApiController(IImageStore imageStore,
-                             IImageProcessor imageProcessor)
+        public ApiController(IImageStorageService imageStore,
+                             IImageProcessingService imageProcessingService)
         {
             _imageStore = imageStore;
-            _imageProcessor = imageProcessor;
+            _imageProcessingService = imageProcessingService;
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace ExdTech.ImageServer.Controllers
 
             try
             {
-                _imageProcessor.ProcessImage (ref imageData, image.WidthLimitPx, image.HeightLimitPx, image.ByteLimit);
+                _imageProcessingService.ProcessImage (ref imageData, image.WidthLimitPx, image.HeightLimitPx, image.ByteLimit);
                 contentType = "image/jpeg";
             }
             catch (ArgumentOutOfRangeException e)

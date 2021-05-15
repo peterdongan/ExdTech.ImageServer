@@ -53,9 +53,9 @@ namespace ExdTech.ImageServer
 
             imageProcessingOptions.CompressionQualityPercentage = int.Parse(Configuration["ImageProcessingConfig:CompressionQualityPercentage"]);
 
-            services.AddScoped<IImageStore>(c => new BlobAccess(Configuration["ImageStoreConnectionString"], Configuration["ContainerClient"]));
+            services.AddScoped<IImageStorageService>(c => new BlobAccess(Configuration["ImageStoreConnectionString"], Configuration["ContainerClient"]));
 
-            services.AddScoped<IImageProcessor> (c => new ImageProcessor (imageProcessingOptions));
+            services.AddScoped<IImageProcessingService> (c => new ImageProcessingService (imageProcessingOptions));
 
 
             services.AddSwaggerGen(c =>

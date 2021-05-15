@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ExdTech.ImageServer.Contract
 {
-    public interface IImageProcessor
+    public interface IImageProcessingService
     {
         /// <summary>
         /// If this is set then an exception is thrown if an image's width exceeds it.

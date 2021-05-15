@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ExdTech.ImageBs.BlobAccess
 {
-    public class BlobAccess : IImageStore
+    public class BlobAccess : IImageStorageService
     {
         private readonly string _connectionString;
         private readonly string _containerClient;
