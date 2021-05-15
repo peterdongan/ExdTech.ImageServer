@@ -69,7 +69,7 @@ namespace ExdTech.ImageServer.Controllers
 
             try
             {
-                _imageProcessingService.ProcessImage (ref imageData, image.WidthLimitPx, image.HeightLimitPx, image.ByteLimit);
+                _imageProcessingService.ProcessImage (ref imageData, image.WidthLimitPx, image.HeightLimitPx);
                 contentType = "image/jpeg";
             }
             catch (ArgumentOutOfRangeException e)

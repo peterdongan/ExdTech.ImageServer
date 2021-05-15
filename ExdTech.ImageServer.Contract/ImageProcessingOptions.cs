@@ -9,13 +9,9 @@ namespace ExdTech.ImageServer.Contract
     {
 
         public const string ImageProcessingConfig = "ImageProcessingConfig";
-
-        public int MaxFileSizeNotCompressedInBytes { get; set; }
         public double MaxHeightInPixels { get; set; }
         public double MaxWidthInPixels { get; set; }
         public int CompressionQualityPercentage { get; set; }
-        public ushort? MaxWidthAccepted { get; set; }
-        public ushort? MaxHeightAccepted { get; set; }
         public uint MaxFileSizeAcceptedInBytes { get; set; }
     }
 }

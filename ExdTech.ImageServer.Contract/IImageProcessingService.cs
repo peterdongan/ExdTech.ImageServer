@@ -8,15 +8,6 @@ namespace ExdTech.ImageServer.Contract
 {
     public interface IImageProcessingService
     {
-        /// <summary>
-        /// If this is set then an exception is thrown if an image's width exceeds it.
-        /// </summary>
-        public ushort? MaxAcceptedWidth { get; }
-
-        /// <summary>
-        /// If this is set then an exception is thrown if an image's width exceeds it.
-        /// </summary>
-        public ushort? MaxAcceptedHeight { get; }
 
         /// <summary>
         /// Throw ArgumentOutOfRangeException if MaxAcceptedWidth/MaxAcceptedHeight are set and the dimensions of the serialized image exceed them.
@@ -27,6 +18,6 @@ namespace ExdTech.ImageServer.Contract
         /// <param name="heightLimit">If this is less than the image height, then the image is scaled down</param>
         /// <param name="byteLimit">If this limit is exceeded, the image is compressed. </param>
         /// <returns></returns>
-        public bool ProcessImage (ref byte[] serializedImage, ushort? widthlimit, ushort? heightLimit, uint? byteLimit);
+        public bool ProcessImage (ref byte[] serializedImage, ushort? widthlimit, ushort? heightLimit);
     }
 }

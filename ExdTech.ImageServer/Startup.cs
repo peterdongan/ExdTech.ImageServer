@@ -40,18 +40,22 @@ namespace ExdTech.ImageServer
                     },
             options => { Configuration.Bind("AzureAdB2C", options); });
 
-                        services.AddAuthorization(options =>
-            {
-                options.AddPolicy("access",
-                    policy => policy.Requirements.Add (new ScopesRequirement("access")));
-            });
+            services.AddAuthorization(options =>
+{
+    options.AddPolicy("access",
+        policy => policy.Requirements.Add(new ScopesRequirement("access")));
+});
 
-            var imageProcessingOptions = new ImageProcessingOptions ();
+            var imageProcessingOptions = new ImageProcessingOptions
+            {
+                CompressionQualityPercentage = int.Parse(Configuration["ImageProcessingConfig:CompressionQualityPercentage"]),
+                MaxFileSizeAcceptedInBytes = uint.Parse(Configuration["ImageProcessingConfig:MaxFileSizeAcceptedInBytes"]),
+                MaxHeightInPixels = uint.Parse(Configuration["ImageProcessingConfig:MaxHeightInPixels"]),
+                MaxWidthInPixels = uint.Parse(Configuration["ImageProcessingConfig:MaxWidthInPixels"]),
+            };
 
             // This was a more elegant way of doing it, but environment variables were not being applied when I did it this way:
             // Configuration.Bind (ImageProcessingOptions.ImageProcessingConfig, imageProcessingOptions);
-
-            imageProcessingOptions.CompressionQualityPercentage = int.Parse(Configuration["ImageProcessingConfig:CompressionQualityPercentage"]);
 
             services.AddScoped<IImageStorageService>(c => new BlobAccess(Configuration["ImageStoreConnectionString"], Configuration["ContainerClient"]));
 
