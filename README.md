@@ -8,6 +8,9 @@ Minimalist image server using a REST API. Designed to be easy to extend and conf
 * Reencodes images as jpegs. 
 * Stores images to Azure Blob Storage. (Or elsewhere with your own implementation of `IImageStore`.)
 
+## Processing
+The image processor uses bicubic interpolation for antialiasing in scaled images. This works better with photographic content than lines.
+
 ## Set-up
 Configure the following values in appsettings.json:
 ````
@@ -27,8 +30,7 @@ Configure the following values in appsettings.json:
 ````    
     
 ### Storage
-By default it uses Azure Blob Storage. You can configure this by setting "ImageStoreConnectionString" and "ContainerClient" configuration values. Alternatively you can replace it by implementing the `IImageStore` interface 
-
+By default it uses Azure Blob Storage. You can configure this by setting "ImageStoreConnectionString" and "ContainerClient" configuration values. Alternatively you can replace it by implementing the `IImageStorageService` interface.
 
 ### Authentication/Authorization
 It's set up for Azure B2C policy-based authorization, using a policy called "access". You can configure this for your own set-up, or remove it.
@@ -47,7 +49,6 @@ POSTs use:
 ````
 
 ### Endpoints
-
 **`/` `POST`** 
 * Image is scaled down if its dimensions exceed configured/specified limits.
 * Image is compressed if its size exceeds configured/specified limits.
@@ -57,6 +58,9 @@ POSTs use:
 
 **`/<Id>` `GET`**
 * Returns the image for the specified Id. File is named `<Id>.jpeg`.
+
+## Planned Features
+Further work on this project would most likely focus on improving the quality of line-based images.
 
 ## Licence
 MIT
