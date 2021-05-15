@@ -8,7 +8,7 @@ Simple image server using a REST API. Designed to be easy to extend and configur
 * Stores images to Azure Blob Storage. (Or elsewhere with your own implementation of `IImageStore`.)
 
 ## Processing
-It uses (Magick.Net[https://github.com/dlemstra/Magick.NET]) for processing, which is a .net wrapper for ImageMagick. The quality of processed images is very good.
+It uses [Magick.Net](https://github.com/dlemstra/Magick.NET]) for processing, which is a .net wrapper for ImageMagick. The quality of processed images is very good.
 
 ## Set-up
 Configure appsettings.json. You must configure an image store for it to work.
