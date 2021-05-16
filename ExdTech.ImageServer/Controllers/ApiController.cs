@@ -6,6 +6,7 @@ using ExdTech.ImageServer.Contract;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -17,13 +18,16 @@ namespace ExdTech.ImageServer.Controllers
     public class ApiController : ControllerBase
     {
         private readonly IImageStorageService _imageStore;
+        private readonly ILogger _logger;
         private readonly IImageProcessingService _imageProcessingService;
 
 
         public ApiController(IImageStorageService imageStore,
+                             ILogger<ApiController> logger,
                              IImageProcessingService imageProcessingService)
         {
             _imageStore = imageStore;
+            _logger = logger;
             _imageProcessingService = imageProcessingService;
         }
 
@@ -36,6 +40,7 @@ namespace ExdTech.ImageServer.Controllers
         [Route("/{id}")]
         public async Task<ActionResult> GetImage(Guid id)
         {
+            _logger.LogInformation("GET " + id);
             try
             {
                 var image = await _imageStore.GetImage(id);
@@ -45,7 +50,7 @@ namespace ExdTech.ImageServer.Controllers
             {
                 return NotFound("No image with the specified Id was found.");
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
@@ -56,15 +61,16 @@ namespace ExdTech.ImageServer.Controllers
         /// </summary>
         /// <param name="image">Image serialized in a byte array with optional arguments for processing.</param>
         /// <returns>Id of the image (GUID)</returns>
-        [HttpPost]//, Authorize(Policy = "access")] // If using authorization: [HttpPost, Authorize(Policy = "access")]
+        [HttpPost, Authorize(Policy = "access")] // If using authorization: [HttpPost, Authorize(Policy = "access")]
         [Route("/")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> PostImage(SerializedImage image)
         {
-            var imageData = image.Data;
 
+            var imageData = image.Data;
+            _logger.LogInformation("POST by " + User.Identity.Name);
             string contentType;
 
             try
@@ -82,6 +88,7 @@ namespace ExdTech.ImageServer.Controllers
             }
 
             var id = await _imageStore.AddImage (imageData, contentType);
+            _logger.LogInformation(id + " added by " + User.Identity.Name);
             return Ok(id);
             
         }

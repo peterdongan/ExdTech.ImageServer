@@ -12,6 +12,7 @@ using ExdTech.ImageBs.BlobAccess;
 using ExdTech.ImageProcessing.Standard;
 using Microsoft.Extensions.Options;
 using System;
+using Microsoft.Extensions.Logging.AzureAppServices;
 
 namespace ExdTech.ImageServer
 {
@@ -29,9 +30,10 @@ namespace ExdTech.ImageServer
             IdentityModelEventSource.ShowPII = true;
             services.AddControllersWithViews();
             services.AddRazorPages();
-
-            // Adds Microsoft Identity platform (AAD v2.0) support to protect this Api
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            services.Configure<AzureFileLoggerOptions>(Configuration.GetSection("AzureLogging"));
+   
+        // Adds Microsoft Identity platform (AAD v2.0) support to protect this Api
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddMicrosoftIdentityWebApi(options =>
                     {
                         Configuration.Bind("AzureAdB2C", options);

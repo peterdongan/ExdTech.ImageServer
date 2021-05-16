@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging.AzureAppServices;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ExdTech.ImageServer
 {
@@ -10,8 +13,21 @@ namespace ExdTech.ImageServer
             CreateHostBuilder(args).Build().Run();
         }
 
+ //       public static IHostBuilder CreateHostBuilder(string[] args) =>
         public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)     // environment variables take precedence over appsettings values.
+            Host.CreateDefaultBuilder(args)
+                //.ConfigureLogging(logging => logging.AddAzureWebAppDiagnostics())
+                //.ConfigureServices(serviceCollection => serviceCollection
+                //    .Configure<AzureFileLoggerOptions>(options =>
+                //    {
+                //        options.FileName = "azure-diagnostics-";
+                //        options.FileSizeLimit = 50 * 1024;
+                //        options.RetainedFileCountLimit = 5;
+                //    })
+                //    .Configure<AzureBlobLoggerOptions>(options =>
+                //    {
+                //        options.BlobName = "log.txt";
+                //    }))
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
