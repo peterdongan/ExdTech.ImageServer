@@ -1,23 +1,21 @@
 # ExdTech.ImageServer
-Minimalist image server using a REST API. Designed to be easy to extend and configure.
+Simple image server using a REST API. Designed to be easy to extend and configure.
 
 ## Functions
-* Compresses images greater than configured/specified filesize.
 * Resizes images with dimensions greater than configured/specified limits.
 * Throws Bad Request if non-images are uploaded or if limits on accepted filesize or dimensions are exceeded.
 * Reencodes images as jpegs. 
 * Stores images to Azure Blob Storage. (Or elsewhere with your own implementation of `IImageStore`.)
 
 ## Processing
-The image processor uses bicubic interpolation for antialiasing in scaled images. This works better with photographic content than lines.
+It uses [Magick.Net](https://github.com/dlemstra/Magick.NET]) for processing, which is a .net wrapper for ImageMagick. The quality of processed images is very good.
 
 ## Set-up
-Configure the following values in appsettings.json:
+Configure appsettings.json. You must configure an image store for it to work.
+
 ````
   // Binds to ExdTech.ImageServer.Contract.ImageProcessingOptions.
   "ImageProcessingConfig": {
-    "MaxWidthAccepted": 1080,   // Not required. Images are rejected if this is exceeded.
-    "MaxHeightAccepted": 1080,  // Not required. Images are rejected if this is exceeded.
     "MaxWidthInPixels": 1080,   // Images are scaled down if this is exceeded. 
     "MaxHeightInPixels": 1080,  // Images are scaled down if this is exceeded.
     "MaxFileSizeNotCompressedInBytes": 200000,  // Images are compressed if this is exceeded.
