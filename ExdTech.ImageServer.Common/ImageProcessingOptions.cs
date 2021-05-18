@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ExdTech.ImageServer.Contract
+namespace ExdTech.ImageServer.Common
 {
     public class ImageProcessingOptions
     {

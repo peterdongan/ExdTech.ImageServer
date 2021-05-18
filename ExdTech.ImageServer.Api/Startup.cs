@@ -1,18 +1,18 @@
+using ExdTech.ImageProcessing.Standard;
+using ExdTech.ImageServer.Common;
+using ExdTech.ImageServer.ImageInfoPersistence;
+using ExdTech.ImageServer.Persistence.AzBlobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging.AzureAppServices;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.OpenApi.Models;
-using ExdTech.ImageServer.Contract;
-using ExdTech.ImageBs.BlobAccess;
-using ExdTech.ImageProcessing.Standard;
-using Microsoft.Extensions.Options;
 using System;
-using Microsoft.Extensions.Logging.AzureAppServices;
 
 namespace ExdTech.ImageServer
 {
@@ -31,9 +31,9 @@ namespace ExdTech.ImageServer
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.Configure<AzureFileLoggerOptions>(Configuration.GetSection("AzureLogging"));
-   
-        // Adds Microsoft Identity platform (AAD v2.0) support to protect this Api
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+
+            // Adds Microsoft Identity platform (AAD v2.0) support to protect this Api
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddMicrosoftIdentityWebApi(options =>
                     {
                         Configuration.Bind("AzureAdB2C", options);
@@ -42,11 +42,13 @@ namespace ExdTech.ImageServer
                     },
             options => { Configuration.Bind("AzureAdB2C", options); });
 
+            services.AddControllers();
             services.AddAuthorization(options =>
-{
-    options.AddPolicy("access",
-        policy => policy.Requirements.Add(new ScopesRequirement("access")));
-});
+            {
+                // Create policy to check for the scope 'read'
+                options.AddPolicy("access",
+                    policy => policy.Requirements.Add(new ScopesRequirement("access")));
+            });
 
             var imageProcessingOptions = new ImageProcessingOptions
             {
@@ -60,7 +62,7 @@ namespace ExdTech.ImageServer
             // Configuration.Bind (ImageProcessingOptions.ImageProcessingConfig, imageProcessingOptions);
 
             services.AddScoped<IImageStorageService>(c => new BlobAccess(Configuration["ImageStoreConnectionString"], Configuration["ContainerClient"]));
-
+            services.AddScoped<IInfoStorageService>(c => new InfoStorageService());
             services.AddScoped<IImageProcessingService> (c => new ImageProcessingService (imageProcessingOptions));
 
 

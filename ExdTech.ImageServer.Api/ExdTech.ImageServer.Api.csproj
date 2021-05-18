@@ -20,9 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ExdTech.ImageBlobAccess\ExdTech.AzureBlobAccess.csproj" />
     <ProjectReference Include="..\ExdTech.ImageProcessing\ExdTech.ImageProcessing.csproj" />
-    <ProjectReference Include="..\ExdTech.ImageServer.Contract\ExdTech.ImageServer.Contract.csproj" />
+    <ProjectReference Include="..\ExdTech.ImageServer.Common\ExdTech.ImageServer.Common.csproj" />
+    <ProjectReference Include="..\ExdTech.ImageServer.Persistence.AzBlobs\ExdTech.ImageServer.Persistence.AzBlobs.csproj" />
+    <ProjectReference Include="..\ExdTech.ImageServer.Persistence.ImageInfo\ExdTech.ImageServer.Persistence.ImageInfo.csproj" />
   </ItemGroup>
 
 </Project>

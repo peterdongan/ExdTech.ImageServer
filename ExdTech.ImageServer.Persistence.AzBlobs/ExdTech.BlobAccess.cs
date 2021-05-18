@@ -1,12 +1,12 @@
 ﻿using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using ExdTech.ImageServer.Contract;
+using ExdTech.ImageServer.Common;
 using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace ExdTech.ImageBs.BlobAccess
+namespace ExdTech.ImageServer.Persistence.AzBlobs
 {
     public class BlobAccess : IImageStorageService
     {

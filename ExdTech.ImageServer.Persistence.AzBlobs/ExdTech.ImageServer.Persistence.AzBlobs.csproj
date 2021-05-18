@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ExdTech.ImageServer.Contract\ExdTech.ImageServer.Contract.csproj" />
+    <ProjectReference Include="..\ExdTech.ImageServer.Common\ExdTech.ImageServer.Common.csproj" />
   </ItemGroup>
 
 </Project>

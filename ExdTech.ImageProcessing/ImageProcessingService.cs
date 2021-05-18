@@ -1,9 +1,5 @@
-﻿using ExdTech.ImageServer.Contract;
+﻿using ExdTech.ImageServer.Common;
 using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.IO;
 
 
 namespace ExdTech.ImageProcessing.Standard

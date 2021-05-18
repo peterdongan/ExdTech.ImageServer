@@ -2,13 +2,12 @@
 // Licensed under the MIT licence. https://opensource.org/licenses/MIT
 // Project: https://github.com/peterdongan/ExdTech.ImageServer
 
-using ExdTech.ImageServer.Contract;
+using ExdTech.ImageServer.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -20,25 +19,73 @@ namespace ExdTech.ImageServer.Controllers
         private readonly IImageStorageService _imageStore;
         private readonly ILogger _logger;
         private readonly IImageProcessingService _imageProcessingService;
-
+        private readonly IInfoStorageService _infoStorageService;
 
         public ApiController(IImageStorageService imageStore,
                              ILogger<ApiController> logger,
-                             IImageProcessingService imageProcessingService)
+                             IImageProcessingService imageProcessingService,
+                             IInfoStorageService infoStorageService)
         {
             _imageStore = imageStore;
             _logger = logger;
+            _infoStorageService = infoStorageService;
             _imageProcessingService = imageProcessingService;
         }
 
         /// <summary>
-        /// Get stored image.
+        /// Get serialized image file and image info
         /// </summary>
-        /// <param name="id">Id of requested image (GUID)</param>
-        /// <returns>Requested image file with name [Id].jpeg</returns>
         [HttpGet]
         [Route("/{id}")]
         public async Task<ActionResult> GetImage(Guid id)
+        {
+            _logger.LogInformation("GET " + id);
+
+            try
+            {
+                var image = await _imageStore.GetImage(id);
+                image.Info = await _infoStorageService.GetInfo(id);
+                return  new ObjectResult (image);
+            }
+            catch (FileNotFoundException)
+            {
+                return NotFound("No image with the specified Id was found.");
+            }
+            catch (Exception e)
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Get image info without the file
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("/{id}/info")]
+        public async Task<ActionResult> GetImageInfo (Guid id)
+        {
+            _logger.LogInformation("GET " + id);
+            try
+            {
+                var info = await _infoStorageService.GetInfo(id);
+                return new OkObjectResult(info);
+            }
+            catch (Exception e)
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Get image file without info
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("/{id}/file")]
+        public async Task<ActionResult> GetImageFile (Guid id)
         {
             _logger.LogInformation("GET " + id);
             try
@@ -66,11 +113,10 @@ namespace ExdTech.ImageServer.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> PostImage(SerializedImage image)
+        public async Task<IActionResult> PostImage(UploadedImage image)
         {
 
             var imageData = image.Data;
-            _logger.LogInformation("POST by " + User.Identity.Name);
             string contentType;
 
             try
@@ -88,6 +134,7 @@ namespace ExdTech.ImageServer.Controllers
             }
 
             var id = await _imageStore.AddImage (imageData, contentType);
+            await _infoStorageService.AddInfo (id, image.Info);
             _logger.LogInformation(id + " added by " + User.Identity.Name);
             return Ok(id);
             

@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace ExdTech.ImageServer.Contract
+namespace ExdTech.ImageServer.Common
 {
+    /// <summary>
+    /// Image file only
+    /// </summary>
     public class RetrievedImage
     {
         public Stream FileContent { get; set; }
@@ -21,6 +24,6 @@ namespace ExdTech.ImageServer.Contract
                 return  string.Format("{0}.{1}", Id, fileExtension);
             } }
 
-
+        public Info Info { get; set; }
     }
 }

@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31129.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExdTech.ImageServer", "ExdTech.ImageServer\ExdTech.ImageServer.csproj", "{45D591A5-5820-4C97-9BF8-E01C83D65C5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExdTech.ImageServer.Api", "ExdTech.ImageServer.Api\ExdTech.ImageServer.Api.csproj", "{45D591A5-5820-4C97-9BF8-E01C83D65C5C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExdTech.ImageProcessing", "ExdTech.ImageProcessing\ExdTech.ImageProcessing.csproj", "{9ABED82F-1EB2-4FDE-B393-852643D664B1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExdTech.AzureBlobAccess", "ExdTech.ImageBlobAccess\ExdTech.AzureBlobAccess.csproj", "{E2571473-CDD2-4990-9AC2-581A737C08AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExdTech.ImageServer.Common", "ExdTech.ImageServer.Common\ExdTech.ImageServer.Common.csproj", "{D0FED7A6-92CC-4642-A112-FBC2CCF3382F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExdTech.ImageServer.Contract", "ExdTech.ImageServer.Contract\ExdTech.ImageServer.Contract.csproj", "{D0FED7A6-92CC-4642-A112-FBC2CCF3382F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExdTech.ImageServer.Persistence.ImageInfo", "ExdTech.ImageServer.Persistence.ImageInfo\ExdTech.ImageServer.Persistence.ImageInfo.csproj", "{5A769DCF-CE32-4F81-BBFB-90C9CE1B4450}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExdTech.ImageServer.Persistence.AzBlobs", "ExdTech.ImageServer.Persistence.AzBlobs\ExdTech.ImageServer.Persistence.AzBlobs.csproj", "{5217A2E3-5582-4356-A119-0F679B03FC61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,14 +27,18 @@ Global
 		{9ABED82F-1EB2-4FDE-B393-852643D664B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9ABED82F-1EB2-4FDE-B393-852643D664B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9ABED82F-1EB2-4FDE-B393-852643D664B1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E2571473-CDD2-4990-9AC2-581A737C08AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E2571473-CDD2-4990-9AC2-581A737C08AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E2571473-CDD2-4990-9AC2-581A737C08AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E2571473-CDD2-4990-9AC2-581A737C08AA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D0FED7A6-92CC-4642-A112-FBC2CCF3382F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D0FED7A6-92CC-4642-A112-FBC2CCF3382F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0FED7A6-92CC-4642-A112-FBC2CCF3382F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0FED7A6-92CC-4642-A112-FBC2CCF3382F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A769DCF-CE32-4F81-BBFB-90C9CE1B4450}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A769DCF-CE32-4F81-BBFB-90C9CE1B4450}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A769DCF-CE32-4F81-BBFB-90C9CE1B4450}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A769DCF-CE32-4F81-BBFB-90C9CE1B4450}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5217A2E3-5582-4356-A119-0F679B03FC61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5217A2E3-5582-4356-A119-0F679B03FC61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5217A2E3-5582-4356-A119-0F679B03FC61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5217A2E3-5582-4356-A119-0F679B03FC61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
