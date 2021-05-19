@@ -37,14 +37,37 @@ namespace ExdTech.ImageServer.Controllers
         /// </summary>
         [HttpGet]
         [Route("/{id}")]
-        public async Task<ActionResult> GetImage(Guid id)
+        public async Task<ActionResult> GetImage(string id)
         {
+            if (id.Length > 41)
+            {
+                return BadRequest ("The Id was too long");
+            }
+
+            if(id.Length <36)
+            {
+                return BadRequest("The Id was too short");
+            }
+
+            Guid gId;
+
+            try
+            {
+                gId = Guid.Parse(id.Substring(0, 36));
+            }
+            catch
+            {
+                return BadRequest("The Id was not a valid GUID.");
+            }
+
+            
+
             _logger.LogInformation("GET " + id);
 
             try
             {
-                var image = await _imageStore.GetImage(id);
-                image.Info = await _infoStorageService.GetInfo(id);
+                var image = await _imageStore.GetImage(gId);
+                image.Info = await _infoStorageService.GetInfo(gId);
                 return  new ObjectResult (image);
             }
             catch (FileNotFoundException)
