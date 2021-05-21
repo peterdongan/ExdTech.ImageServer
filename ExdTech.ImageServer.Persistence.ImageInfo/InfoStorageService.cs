@@ -12,8 +12,8 @@ namespace ExdTech.ImageServer.ImageInfoPersistence
         public InfoStorageService()
         {
             var optionsBuilder = new DbContextOptionsBuilder();
-            //optionsBuilder.UseSqlite("Data Source=d:/home/site/wwwroot/content/imageinfo.db");
-            optionsBuilder.UseSqlite("FileName=imageinfo.db");
+            optionsBuilder.UseSqlite("FileName=d:/home/site/wwwroot/content/imageinfo.db");
+            //optionsBuilder.UseSqlite("FileName=imageinfo.db");
             _options = optionsBuilder.Options;
         }
 
