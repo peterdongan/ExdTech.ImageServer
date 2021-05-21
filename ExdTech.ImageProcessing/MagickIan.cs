@@ -18,7 +18,7 @@ namespace ExdTech.ImageProcessing.Standard
                 image.Quality = quality;
                 image.Format = MagickFormat.Jpeg;
                 image.Resize(size);
-                
+
                 return image.ToByteArray();
             }
         }

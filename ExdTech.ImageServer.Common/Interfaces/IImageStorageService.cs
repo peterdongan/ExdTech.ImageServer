@@ -13,7 +13,7 @@ namespace ExdTech.ImageServer.Common
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<RetrievedImage> GetImage (Guid id);
+        Task<RetrievedImageFile> GetImageFile (Guid id);
 
         Task<Guid> AddImage (byte[] data, string docType);
     }

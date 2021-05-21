@@ -37,47 +37,37 @@ namespace ExdTech.ImageServer.Controllers
         /// </summary>
         [HttpGet]
         [Route("/{id}")]
-        public async Task<ActionResult> GetImage(string id)
+        public async Task<ActionResult> GetImageObject (string id)
         {
-            if (id.Length > 41)
-            {
-                return BadRequest ("The Id was too long");
-            }
-
-            if(id.Length <36)
-            {
-                return BadRequest("The Id was too short");
-            }
-
             Guid gId;
 
             try
             {
-                gId = Guid.Parse(id.Substring(0, 36));
+                gId = TryGetGuid (id);
             }
-            catch
+            catch (BadHttpRequestException e)
             {
-                return BadRequest("The Id was not a valid GUID.");
+                return BadRequest(e);
             }
-
-            
 
             _logger.LogInformation("GET " + id);
 
             try
-            {
-                var image = await _imageStore.GetImage(gId);
-                image.Info = await _infoStorageService.GetInfo(gId);
-                return  new ObjectResult (image);
+            { 
+                var imageFile = await _imageStore.GetImageFile(gId);
+                var imageObject = new RetrievedImageObject();
+                imageObject.InitializeFile(imageFile);
+                imageObject.Info = await _infoStorageService.GetInfo(gId);
+                return  new JsonResult (imageObject);
             }
             catch (FileNotFoundException)
             {
                 return NotFound("No image with the specified Id was found.");
-            }
-            catch (Exception e)
+    }
+            catch (Exception )
             {
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-            }
+        }
         }
 
         /// <summary>
@@ -86,13 +76,31 @@ namespace ExdTech.ImageServer.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("/{id}/info")]
-        public async Task<ActionResult> GetImageInfo (Guid id)
+        [Route("/info/{id}")]
+        public async Task<ActionResult> GetImageInfo (string id)
         {
             _logger.LogInformation("GET " + id);
+
+            Guid gId;
+
             try
             {
-                var info = await _infoStorageService.GetInfo(id);
+                gId = TryGetGuid(id);
+            }
+            catch (BadHttpRequestException e)
+            {
+                return BadRequest(e);
+            }
+
+            try
+            {
+                var info = await _infoStorageService.GetInfo(gId);
+
+                if (info == null)
+                {
+                    return NotFound("No info was found for " + id);
+                }
+
                 return new OkObjectResult(info);
             }
             catch (Exception e)
@@ -107,13 +115,25 @@ namespace ExdTech.ImageServer.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("/{id}/file")]
-        public async Task<ActionResult> GetImageFile (Guid id)
+        [Route("/images/{id}")]
+        public async Task<ActionResult> GetImageFile(string id)
         {
             _logger.LogInformation("GET " + id);
+
+            Guid gId;
+
             try
             {
-                var image = await _imageStore.GetImage(id);
+                gId = TryGetGuid(id);
+            }
+            catch (BadHttpRequestException e)
+            {
+                return BadRequest(e);
+            }
+
+            try
+            {
+                var image = await _imageStore.GetImageFile(gId);
                 return File(image.FileContent, image.DocType, image.FileName);
             }
             catch (FileNotFoundException)
@@ -136,7 +156,7 @@ namespace ExdTech.ImageServer.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> PostImage(UploadedImage image)
+        public async Task<IActionResult> PostImage(UploadedImageObject image)
         {
 
             var imageData = image.Data;
@@ -161,6 +181,32 @@ namespace ExdTech.ImageServer.Controllers
             _logger.LogInformation(id + " added by " + User.Identity.Name);
             return Ok(id);
             
+        }
+
+        private static Guid TryGetGuid (string idString)
+        {
+            if (idString.Length > 41)
+            {
+                throw new BadHttpRequestException ("The Id string was too long.");
+            }
+
+            if (idString.Length < 36)
+            {
+                throw new BadHttpRequestException("The Id string was too short.");
+            }
+
+            Guid gId;
+
+            try
+            {
+                gId = Guid.Parse(idString.Substring(0, 36));
+            }
+            catch
+            {
+                throw new BadHttpRequestException ("The Id string was not a valid GUID.");
+            }
+
+            return gId;
         }
 
 

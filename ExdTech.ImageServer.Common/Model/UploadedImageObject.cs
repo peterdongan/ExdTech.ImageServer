@@ -5,7 +5,7 @@ namespace ExdTech.ImageServer.Common
     /// <summary>
     /// Schema for POSTs to the API
     /// </summary>
-    public class UploadedImage
+    public class UploadedImageObject
     {
         public byte[] Data { get; set; }
 

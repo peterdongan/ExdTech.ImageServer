@@ -23,7 +23,7 @@ namespace ExdTech.ImageServer.Persistence.AzBlobs
             _containerClient = containerClient;
         }
 
-        public async Task<RetrievedImage> GetImage(Guid id)
+        public async Task<RetrievedImageFile> GetImageFile(Guid id)
         {
             try
             {
@@ -32,7 +32,9 @@ namespace ExdTech.ImageServer.Persistence.AzBlobs
                 BlobClient blobClient = containerClient.GetBlobClient(id.ToString());
                 var download = await blobClient.DownloadAsync();
                 var contentType = download.Value.ContentType;
-                return new RetrievedImage { DocType = contentType, FileContent = download.Value.Content, Id = id };
+                var result = new RetrievedImageFile { DocType = contentType, FileContent = download.Value.Content, Id = id };
+
+                return result;
             }
             catch (RequestFailedException e)
             {

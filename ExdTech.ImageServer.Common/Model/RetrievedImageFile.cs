@@ -6,9 +6,9 @@ using System.Text;
 namespace ExdTech.ImageServer.Common
 {
     /// <summary>
-    /// Image file only
+    /// Image as stream with data to create file only
     /// </summary>
-    public class RetrievedImage
+    public class RetrievedImageFile
     {
         public Stream FileContent { get; set; }
 
@@ -23,7 +23,5 @@ namespace ExdTech.ImageServer.Common
                 var fileExtension = DocType.Substring(slashIndex + 1);
                 return  string.Format("{0}.{1}", Id, fileExtension);
             } }
-
-        public Info Info { get; set; }
     }
 }
