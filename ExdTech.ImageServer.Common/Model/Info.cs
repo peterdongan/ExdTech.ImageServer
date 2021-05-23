@@ -5,16 +5,24 @@ using System.Text;
 
 namespace ExdTech.ImageServer.Common
 {
-    public class Info
+    public class BaseInfo
     {
-        public string AddedBy { get; set; }
         public string Author { get; set; }
-        public DateTime DateAdded { get; set; }
         public string OriginalFileName { get; set; }
         public string Title { get; set; }
         public string Source { get; set; }
         public string Notes { get; set; }
-
         public LicenceType LicenceId { get; set; }
+    }
+
+    public class UploadedInfo : BaseInfo
+    {
+
+    }
+
+    public class RetrievedInfo : BaseInfo
+    {
+        public DateTime DateAddedUtc { get; set; }
+        public string AddedBy { get; set; }
     }
 }

@@ -16,5 +16,7 @@ namespace ExdTech.ImageServer.Common
         Task<RetrievedImageFile> GetImageFile (Guid id);
 
         Task<Guid> AddImage (byte[] data, string docType);
+
+        Task AddImage(Guid id, byte[] serializedFile, string docType);
     }
 }

@@ -32,7 +32,7 @@ namespace ExdTech.ImageServer.Persistence.AzBlobs
                 BlobClient blobClient = containerClient.GetBlobClient(id.ToString());
                 var download = await blobClient.DownloadAsync();
                 var contentType = download.Value.ContentType;
-                var result = new RetrievedImageFile { DocType = contentType, FileContent = download.Value.Content, Id = id };
+                var result = new RetrievedImageFile { DocType = contentType, FileContentStream = download.Value.Content, Id = id };
 
                 return result;
             }
@@ -61,6 +61,21 @@ namespace ExdTech.ImageServer.Persistence.AzBlobs
             var stream = new MemoryStream(serializedFile);
             await blobClient.UploadAsync(stream, new BlobHttpHeaders { ContentType = docType });
             return id;
+        }
+
+        public async Task AddImage(Guid id, byte[] serializedFile, string docType)
+        {
+            var idString = id.ToString();
+
+            BlobServiceClient blobServiceClient = new BlobServiceClient(_connectionString);
+
+            var containerClient = blobServiceClient.GetBlobContainerClient(_containerClient);
+
+            BlobClient blobClient = containerClient.GetBlobClient(idString);
+
+            // Open the file and upload its data
+            var stream = new MemoryStream(serializedFile);
+            await blobClient.UploadAsync(stream, new BlobHttpHeaders { ContentType = docType });
         }
     }
 }

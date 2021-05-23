@@ -18,6 +18,6 @@ namespace ExdTech.ImageServer.Common
         /// Scale down the image if it is taller than this. Ignored if greater than server max.
         public ushort? HeightLimitPx { get; set; }
 
-        public Info Info {get; set; }
+        public UploadedInfo Info {get; set; }
     }
 }

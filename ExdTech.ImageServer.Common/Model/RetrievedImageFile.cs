@@ -10,7 +10,7 @@ namespace ExdTech.ImageServer.Common
     /// </summary>
     public class RetrievedImageFile
     {
-        public Stream FileContent { get; set; }
+        public Stream FileContentStream { get; set; }
 
         public Guid Id { get; set; }
 

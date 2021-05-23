@@ -17,15 +17,16 @@ namespace ExdTech.ImageServer.ImageInfoPersistence
             _options = optionsBuilder.Options;
         }
 
-        public async Task AddInfo(Guid id, Info info)
+        public async Task AddInfo(Guid id, UploadedInfo info, string username)
         {
             using (var db = new ImageInfoContext(_options))
             {
+                
                 var newInfo = new ImageInfo
                 {
-                    AddedBy = info.AddedBy,
+                    AddedBy = username,
                     Author = info.Author,
-                    DateAdded = info.DateAdded,
+                    DateAdded = DateTime.UtcNow,
                     Id = id,
                     LicenceId = (int)info.LicenceId,
                     Notes = info.Notes,
@@ -40,7 +41,7 @@ namespace ExdTech.ImageServer.ImageInfoPersistence
 
         }
 
-        public async Task<Info> GetInfo(Guid id)
+        public async Task<RetrievedInfo> GetInfo(Guid id)
         {
             using (var db = new ImageInfoContext(_options))
             {
@@ -51,11 +52,11 @@ namespace ExdTech.ImageServer.ImageInfoPersistence
                     return null;
                 }
 
-                var iinfo = new Info
+                var iinfo = new RetrievedInfo
                 {
                     AddedBy = info.AddedBy,
                     Author = info.Author,
-                    DateAdded = info.DateAdded,
+                    DateAddedUtc = info.DateAdded,
                     LicenceId = (LicenceType)info.LicenceId,
                     Notes = info.Notes,
                     OriginalFileName = info.OriginalFileName,
