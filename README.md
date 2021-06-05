@@ -57,8 +57,5 @@ POSTs use:
 **`/<Id>` `GET`**
 * Returns the image for the specified Id. File is named `<Id>.jpeg`.
 
-## Planned Features
-Further work on this project would most likely focus on improving the quality of line-based images.
-
 ## Licence
 MIT
