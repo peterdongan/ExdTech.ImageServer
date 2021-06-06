@@ -62,7 +62,7 @@ namespace ExdTech.ImageServer
             // Configuration.Bind (ImageProcessingOptions.ImageProcessingConfig, imageProcessingOptions);
 
             services.AddScoped<IImageStorageService>(c => new BlobAccess(Configuration["ImageStoreConnectionString"], Configuration["ContainerClient"]));
-            services.AddScoped<IInfoStorageService>(c => new InfoStorageService());
+            services.AddScoped<IInfoStorageService>(c => new InfoStorageService(Configuration["ImageInfoConnectionString"]));
             services.AddScoped<IImageProcessingService> (c => new ImageProcessingService (imageProcessingOptions));
 
 

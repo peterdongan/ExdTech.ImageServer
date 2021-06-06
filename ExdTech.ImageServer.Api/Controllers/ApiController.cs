@@ -70,14 +70,14 @@ namespace ExdTech.ImageServer.Controllers
         }
         }
 
-        /// <summary>
-        /// Get image info without the file
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        ///// <summary>
+        ///// Get image info without the file
+        ///// </summary>
+        ///// <param name="id"></param>
+        ///// <returns></returns>
         [HttpGet]
         [Route("/info/{id}")]
-        public async Task<ActionResult> GetImageInfo (string id)
+        public async Task<ActionResult> GetImageInfo(string id)
         {
             _logger.LogInformation("GET " + id);
 
@@ -98,7 +98,7 @@ namespace ExdTech.ImageServer.Controllers
 
                 if (info == null)
                 {
-                    return NotFound (new ProblemDetails { Title = "No info was found for " + id });
+                    return NotFound(new ProblemDetails { Title = "No info was found for " + id });
                 }
 
                 return new OkObjectResult(info);
@@ -159,88 +159,55 @@ namespace ExdTech.ImageServer.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> PostImage(UploadedImageObject image)
         {
-
-            var imageData = image.Data;
-
-            string contentType;
-
             try
             {
-                _imageProcessingService.ProcessImage (ref imageData, image.WidthLimitPx, image.HeightLimitPx);
-                contentType = "image/jpeg";
-            }
-            catch (ArgumentOutOfRangeException e)
-            {
-                return BadRequest(new ProblemDetails { Title = e.Message });  // Assumed this is thrown because Image dimensions outside expected range.
-            }
-            catch (InvalidDataException)
-            {
-                return BadRequest(new ProblemDetails { Title = "Not a valid image file." });
-            }
+                var imageData = image.Data;
 
-            var id = await _imageStore.AddImage (imageData, contentType);
-            await _infoStorageService.AddInfo (id, image.Info, User.Identity.Name);
-            image.Data = imageData;
-            _logger.LogInformation(id + " added by " + User.Identity.Name);
-            return Ok(image);
-            
-        }
-
-        [HttpPut, Authorize(Policy = "access")]
-        [Route("/{id}")]
-        public async Task<ActionResult> PutImageObject(UploadedImageObject imageObject)
-        {
-            Guid gId;
-
-            try
-            {
-                gId = TryGetGuid(RouteData.Values["id"].ToString());
-                if (!ValidateInfo(imageObject.Info))
+                if (!ValidateInfo (image.Info))
                 {
-                    return BadRequest(new ProblemDetails { Title = "Info contained invalid data" });
+                    return BadRequest(new ProblemDetails { Title = "One or more info fields are too long." });
                 }
 
-            }
-            catch (BadHttpRequestException e)
-            {
-                return BadRequest(new ProblemDetails { Title = e.Message });
-            }
+                string contentType;
 
-            var imageData = imageObject.Data;
-            string contentType;
+                try
+                {
+                    _imageProcessingService.ProcessImage(ref imageData, image.WidthLimitPx, image.HeightLimitPx);
+                    contentType = "image/jpeg";
+                }
+                catch (ArgumentOutOfRangeException e)
+                {
+                    return BadRequest(new ProblemDetails { Title = e.Message });  // Assumed this is thrown because Image dimensions outside expected range.
+                }
+                catch (InvalidDataException)
+                {
+                    return BadRequest(new ProblemDetails { Title = "Not a valid image file." });
+                }
 
-            try
-            {
-                _imageProcessingService.ProcessImage(ref imageData, imageObject.WidthLimitPx, imageObject.HeightLimitPx);
-                contentType = "image/jpeg";
-            }
-            catch (ArgumentOutOfRangeException e)
-            {
-                return BadRequest(new ProblemDetails { Title = e.Message });  // Assumed this is thrown because Image dimensions outside expected range.
-            }
-            catch (InvalidDataException)
-            {
-                return BadRequest(new ProblemDetails { Title = "Not a valid image file." });
-            }
-            catch (Exception)
-            {
-                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-            }
-            try
-            {
-                await _imageStore.AddImage(gId, imageData, contentType);
-                await _infoStorageService.AddInfo(gId, imageObject.Info, User.Identity.Name);
+                var id = await _imageStore.AddImage(imageData, contentType);
+                var now = DateTime.UtcNow;
+                await _infoStorageService.AddInfo(id, image.Info, User.Identity.Name, now);
+
+                var responseObject = new RetrievedImageObject
+                {
+                    FileContentByteArray = imageData,
+                    DocType = "image/jpeg",
+                    Id = id,
+                    Info = new RetrievedInfo
+                    {
+                        DateAddedUtc = now,
+                        AddedBy = User.Identity.Name
+                    }
+                };
+
+                return Ok(responseObject);
             }
             catch (Exception e)
             {
-                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+                _logger.LogError(e.ToString());
+                return this.Problem(e.Message);
             }
-
-            _logger.LogInformation(gId + " added by " + User.Identity.Name);
-            return Ok();
-
         }
-
 
         private static Guid TryGetGuid (string idString)
         {
@@ -268,6 +235,7 @@ namespace ExdTech.ImageServer.Controllers
             return gId;
         }
 
+        //This needs to be documented and at least some of it should be configurable.
         private static bool ValidateInfo (UploadedInfo o)
         {
             // There is a default max upload allowed of 28MB on both IIS and Kestrel.

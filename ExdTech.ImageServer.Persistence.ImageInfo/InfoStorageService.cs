@@ -3,21 +3,35 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
 
+
+
 namespace ExdTech.ImageServer.ImageInfoPersistence
 {
     public class InfoStorageService : IInfoStorageService
     {
         private readonly DbContextOptions _options;
 
-        public InfoStorageService()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <param name="useSqlServer">True by default. If false then SQLite is used.</param>
+        public InfoStorageService (string connectionString, bool useSqlServer = true)
         {
             var optionsBuilder = new DbContextOptionsBuilder();
-            optionsBuilder.UseSqlite("FileName=d:/home/site/wwwroot/content/imageinfo.db");
-            //optionsBuilder.UseSqlite("FileName=imageinfo.db");
+            if (useSqlServer)
+            {
+                optionsBuilder.UseSqlServer(connectionString);
+            }
+            else
+            {
+                optionsBuilder.UseSqlite(connectionString);
+            }
             _options = optionsBuilder.Options;
         }
 
-        public async Task AddInfo(Guid id, UploadedInfo info, string username)
+
+        public async Task AddInfo(Guid id, UploadedInfo info, string username, DateTime dateTime)
         {
             using (var db = new ImageInfoContext(_options))
             {
@@ -26,7 +40,7 @@ namespace ExdTech.ImageServer.ImageInfoPersistence
                 {
                     AddedBy = username,
                     Author = info.Author,
-                    DateAdded = DateTime.UtcNow,
+                    DateAdded = dateTime,
                     Id = id,
                     LicenceId = (int)info.LicenceId,
                     Notes = info.Notes,

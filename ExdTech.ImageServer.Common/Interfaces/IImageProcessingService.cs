@@ -18,6 +18,6 @@ namespace ExdTech.ImageServer.Common
         /// <param name="heightLimit">If this is less than the image height, then the image is scaled down</param>
         /// <param name="byteLimit">If this limit is exceeded, the image is compressed. </param>
         /// <returns></returns>
-        public bool ProcessImage (ref byte[] serializedImage, ushort? widthlimit, ushort? heightLimit);
+        bool ProcessImage (ref byte[] serializedImage, ushort? widthlimit, ushort? heightLimit);
     }
 }

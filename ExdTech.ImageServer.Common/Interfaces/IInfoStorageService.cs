@@ -10,6 +10,6 @@ namespace ExdTech.ImageServer.Common
     {
         Task<RetrievedInfo> GetInfo (Guid id);
 
-        Task AddInfo (Guid id, UploadedInfo info, string username);
+        Task AddInfo (Guid id, UploadedInfo info, string username, DateTime now);
     }
 }

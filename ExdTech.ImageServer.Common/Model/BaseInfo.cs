@@ -15,14 +15,4 @@ namespace ExdTech.ImageServer.Common
         public LicenceType LicenceId { get; set; }
     }
 
-    public class UploadedInfo : BaseInfo
-    {
-
-    }
-
-    public class RetrievedInfo : BaseInfo
-    {
-        public DateTime DateAddedUtc { get; set; }
-        public string AddedBy { get; set; }
-    }
 }
