@@ -16,7 +16,7 @@ It is set up to use an Azure blob store for the images and SQL server for image 
 The following packages are available on nuget to facilitate client development:
 
 * [ExdTech.ImageServer.Common](https://www.nuget.org/packages/ExdTech.ImageServer.Common/) has definitions for the DTOs and the interfaces.
-* [ExdTech.ImageServer.Persistence.ImageInfo](https://www.nuget.org/packages/ExdTech.ImageServer.Persistence.ImageInfo/) has an EF model for the image info data store and an implementation of a data access service to access it.
+* [ExdTech.ImageServer.Persistence.ImageInfo](https://www.nuget.org/packages/ExdTech.ImageServer.Persistence.ImageInfo/) has an EF model for the image info data store and an implementation of a data access service to access it. It is used by the Exd Pic Windows app to store the image info locally.
 
 ### Configuration
 Configure appsettings.json. You must configure an image store and an info store for it to work.
