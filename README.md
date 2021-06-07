@@ -1,17 +1,25 @@
 # ExdTech.ImageServer
-Simple image server using a REST API. Designed to be easy to extend and configure.
+This is the image server used by [exd pic](https://exdpic.com). It is live at [images.exdpic.com](https://images.exdpic.com). It is a simple image server that uses a REST API. It is designed to be easy to extend and configure. 
 
 ## Functions
-* Resizes images with dimensions greater than configured/specified limits.
+* High quality image resizing and compression.
 * Throws Bad Request if non-images are uploaded or if limits on accepted filesize or dimensions are exceeded.
-* Reencodes images as jpegs. 
+* Reencodes images as jpegs. (This behaviour should not be removed without understanding and consideration of the security aspect.) 
 * Stores images to Azure Blob Storage. (Or elsewhere with your own implementation of `IImageStore`.)
 
 ## Processing
 It uses [Magick.Net](https://github.com/dlemstra/Magick.NET]) for processing, which is a .net wrapper for ImageMagick. The quality of processed images is very good.
 
 ## Set-up
-Configure appsettings.json. You must configure an image store for it to work.
+It is set up to use an Azure blob store for the images and SQL server for image information. You can change it to use different stores by using a new implementation of IImageStorageService or IInfoStorageService respectively. 
+
+The following packages are available on nuget to facilitate client development:
+
+* [ExdTech.ImageServer.Common](https://www.nuget.org/packages/ExdTech.ImageServer.Common/) has definitions for the DTOs and the interfaces.
+* [ExdTech.ImageServer.Persistence.ImageInfo](https://www.nuget.org/packages/ExdTech.ImageServer.Persistence.ImageInfo/) has an EF model for the image info data store and an implementation of a data access service to access it.
+
+### Configuration
+Configure appsettings.json. You must configure an image store and an info store for it to work.
 
 ````
   // Binds to ExdTech.ImageServer.Contract.ImageProcessingOptions.
@@ -26,36 +34,27 @@ Configure appsettings.json. You must configure an image store for it to work.
   "ImageStoreConnectionString": "<Connection string>",
   "ContainerClient": "<Container>", // Container must already exist
 ````    
-    
+
 ### Storage
 By default it uses Azure Blob Storage. You can configure this by setting "ImageStoreConnectionString" and "ContainerClient" configuration values. Alternatively you can replace it by implementing the `IImageStorageService` interface.
 
 ### Authentication/Authorization
-It's set up for Azure B2C policy-based authorization, using a policy called "access". You can configure this for your own set-up, or remove it.
+It uses Azure AD B2C authentication for POSTs. You will probably want to remove or change this. It can be turned off by removing the  Authorize(Policy = "access") attribute from the POST method in the API contrller. 
 
-## API
+## API and Schema
+It uses JSON. See the swagger documentation for the live version at https://images.exdpic.com/index.html. 
 
-### Schema
-POSTs use:
-```
-{
-"Data": byte[],             // Serialized image
-"WidthLimitPx": ushort?,    // Image is scaled down if this is exceeded. No effect if it is greater than the server's configured MaxWidthInPixels.
-"HeightLimitPx": ushort?,   // Image is scaled down if this is exceeded. No effect if it is greater than the server's configured MaxHeightInPixels.
-"ByteLimit": byte?          // Image is compressed if this is exceeded. No effect if it is greater than the server's configured MaxFileSizeNotCompressedInBytes.
-}
-````
+### /{id} GET
+Get an object containing the info and the image serialized as a byte array
 
-### Endpoints
-**`/` `POST`** 
-* Image is scaled down if its dimensions exceed configured/specified limits.
-* Image is compressed if its size exceeds configured/specified limits.
-* Throws Bad Request if a non-image is uploaded.
-* Throws Bad Request if any of `MaxFileSizeAcceptedInBytes`, `MaxHeightAccepted` or `MaxWidthAccepted` are configured and exceeded.
-* Returns a GUID.
+### /images/{id} GET
+Get the image file. `/images/{id}.jpeg` and `/images/{id}.jpg` will also work.
 
-**`/<Id>` `GET`**
-* Returns the image for the specified Id. File is named `<Id>.jpeg`.
+### /info/{id} GET
+Get the image info only.
+
+### / POST
+Send the image serialized as a byte array as well as information about the image.
 
 ## Licence
 MIT
