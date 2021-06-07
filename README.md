@@ -1,5 +1,5 @@
 # ExdTech.ImageServer
-This is the image server used by [exd pic](https://exdpic.com). It is live at [images.exdpic.com](https://images.exdpic.com). It is a simple image server that uses a REST API. It is designed to be easy to extend and configure. 
+This is the image server used by [Exd Pic](https://exdpic.com). It is live at [images.exdpic.com](https://images.exdpic.com). It is a simple image server that uses a REST API. It is designed to be easy to extend and configure. 
 
 ## Functions
 * High quality image resizing and compression.
